@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, FileSpreadsheet, Users, Link, Calendar, DollarSign, Clock } from 'lucide-react';
+import { Upload, FileSpreadsheet, Users, Link, Calendar, DollarSign, Clock, UserCheck, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useRegistrants } from '@/hooks/useRegistrants';
+import RegistrantDetail from '@/components/RegistrantDetail';
+import { RegistrantWithHistory } from '@/types/registrant';
 
 // 模擬報名資料的介面
 interface RegistrationData {
@@ -33,6 +35,8 @@ interface RegistrationData {
 
 const Index = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [selectedRegistrant, setSelectedRegistrant] = useState<RegistrantWithHistory | null>(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [registrations, setRegistrations] = useState<RegistrationData[]>([
     {
       id: '1',
@@ -94,6 +98,7 @@ const Index = () => {
   ]);
   
   const { toast } = useToast();
+  const { registrants, loading, fetchRegistrants, migrateExistingData } = useRegistrants();
 
   const quickLinks = [
     {
@@ -176,6 +181,11 @@ const Index = () => {
     window.open(url, '_blank');
   };
 
+  const handleViewRegistrant = (registrant: RegistrantWithHistory) => {
+    setSelectedRegistrant(registrant);
+    setDetailDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -190,7 +200,7 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="upload" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="upload" className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
               資料上傳
@@ -198,6 +208,10 @@ const Index = () => {
             <TabsTrigger value="data" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               報名資料
+            </TabsTrigger>
+            <TabsTrigger value="registrants" className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4" />
+              報名者清單
             </TabsTrigger>
             <TabsTrigger value="links" className="flex items-center gap-2">
               <Link className="w-4 h-4" />
@@ -313,6 +327,110 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          {/* 新增報名者清單區域 */}
+          <TabsContent value="registrants">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="w-5 h-5" />
+                    報名者清單
+                  </div>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary">
+                      總計 {registrants.length} 位報名者
+                    </Badge>
+                    <Button 
+                      onClick={migrateExistingData}
+                      variant="outline"
+                      size="sm"
+                    >
+                      遷移現有資料
+                    </Button>
+                  </div>
+                </CardTitle>
+                <CardDescription>
+                  所有報名者的歷史記錄，點擊查看詳細資料
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-8">載入中...</div>
+                ) : (
+                  <div className="rounded-md border overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>姓名</TableHead>
+                          <TableHead>聯絡方式</TableHead>
+                          <TableHead>住戶身份</TableHead>
+                          <TableHead>報名次數</TableHead>
+                          <TableHead>最近報名時間</TableHead>
+                          <TableHead>操作</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {registrants.map((registrant) => {
+                          const latestRegistration = registrant.history.sort(
+                            (a, b) => new Date(b.submit_time).getTime() - new Date(a.submit_time).getTime()
+                          )[0];
+                          
+                          return (
+                            <TableRow key={registrant.id}>
+                              <TableCell className="font-medium">
+                                <div>
+                                  <div>{registrant.name}</div>
+                                  <div className="text-sm text-gray-500">
+                                    {registrant.gender || '-'}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  <div>{registrant.email}</div>
+                                  <div className="text-gray-500">{registrant.phone}</div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={registrant.is_resident ? 'default' : 'secondary'}
+                                >
+                                  {registrant.is_resident ? '住戶' : '非住戶'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline">
+                                  {registrant.history.length} 次
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {latestRegistration ? 
+                                  new Date(latestRegistration.submit_time).toLocaleDateString('zh-TW')
+                                  : '-'
+                                }
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewRegistrant(registrant)}
+                                  className="flex items-center gap-1"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                  查看
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* 快速連結區域 */}
           <TabsContent value="links">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -387,6 +505,13 @@ const Index = () => {
           </Card>
         </div>
       </div>
+
+      {/* 報名者詳細資料對話框 */}
+      <RegistrantDetail 
+        registrant={selectedRegistrant}
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+      />
     </div>
   );
 };

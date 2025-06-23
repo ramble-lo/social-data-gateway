@@ -9,7 +9,95 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      registrants: {
+        Row: {
+          created_at: string
+          email: string
+          gender: string | null
+          housing_location: string | null
+          id: string
+          is_resident: boolean | null
+          line_id: string | null
+          name: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          gender?: string | null
+          housing_location?: string | null
+          id?: string
+          is_resident?: boolean | null
+          line_id?: string | null
+          name: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          gender?: string | null
+          housing_location?: string | null
+          id?: string
+          is_resident?: boolean | null
+          line_id?: string | null
+          name?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      registration_history: {
+        Row: {
+          activity_name: string
+          age: string | null
+          children_count: string | null
+          created_at: string
+          id: string
+          info_source: string | null
+          injury_history: string | null
+          registrant_id: string | null
+          sports_experience: string | null
+          submit_time: string
+          suggestions: string | null
+        }
+        Insert: {
+          activity_name: string
+          age?: string | null
+          children_count?: string | null
+          created_at?: string
+          id?: string
+          info_source?: string | null
+          injury_history?: string | null
+          registrant_id?: string | null
+          sports_experience?: string | null
+          submit_time: string
+          suggestions?: string | null
+        }
+        Update: {
+          activity_name?: string
+          age?: string | null
+          children_count?: string | null
+          created_at?: string
+          id?: string
+          info_source?: string | null
+          injury_history?: string | null
+          registrant_id?: string | null
+          sports_experience?: string | null
+          submit_time?: string
+          suggestions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_history_registrant_id_fkey"
+            columns: ["registrant_id"]
+            isOneToOne: false
+            referencedRelation: "registrants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
