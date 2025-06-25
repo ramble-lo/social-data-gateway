@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 
 export interface Registrant {
   id: string;
@@ -8,8 +9,8 @@ export interface Registrant {
   line_id?: string;
   is_resident: boolean;
   housing_location?: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Timestamp;
+  updated_at: Timestamp;
 }
 
 export interface RegistrationHistory {
@@ -22,8 +23,8 @@ export interface RegistrationHistory {
   injury_history?: string;
   info_source?: string;
   suggestions?: string;
-  submit_time: string;
-  created_at: string;
+  submit_time: Timestamp;
+  created_at: Timestamp;
 }
 
 export interface RegistrantWithHistory extends Registrant {

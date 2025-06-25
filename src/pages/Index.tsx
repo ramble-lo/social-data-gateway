@@ -1,17 +1,40 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, FileSpreadsheet, Users, Link, Calendar, DollarSign, Clock, UserCheck, Eye } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useRegistrants } from '@/hooks/useRegistrants';
-import RegistrantDetail from '@/components/RegistrantDetail';
-import { RegistrantWithHistory } from '@/types/registrant';
-import { processExcelFile } from '@/utils/excelProcessor';
+import React, { useState, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Upload,
+  FileSpreadsheet,
+  Users,
+  Link,
+  Calendar,
+  DollarSign,
+  Clock,
+  UserCheck,
+  Eye,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useRegistrants } from "@/hooks/useRegistrants";
+import RegistrantDetail from "@/components/RegistrantDetail";
+import { RegistrantWithHistory } from "@/types/registrant";
+import { processExcelFile } from "@/utils/excelProcessor";
 
 // 模擬報名資料的介面
 interface RegistrationData {
@@ -36,115 +59,72 @@ interface RegistrationData {
 
 const Index = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [selectedRegistrant, setSelectedRegistrant] = useState<RegistrantWithHistory | null>(null);
+  const [selectedRegistrant, setSelectedRegistrant] =
+    useState<RegistrantWithHistory | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [registrations, setRegistrations] = useState<RegistrationData[]>([
-    {
-      id: '1',
-      activityName: '《FREE STYLE玩拼豆》2025/07/06 14:30-16:30',
-      name: '張聿昕',
-      gender: '男',
-      age: '',
-      email: 'morrielynn@gmail.com',
-      phone: '0988992069',
-      lineId: '',
-      childrenCount: '',
-      isResident: '否，我是文山區鄰近居民',
-      housingLocation: '',
-      sportsExperience: '',
-      injuryHistory: '',
-      infoSource: '',
-      suggestions: '',
-      submitTime: '2025-06-20 13:45:37',
-      key: 'morrielynn@gmail.com_0988992069'
-    },
-    {
-      id: '2',
-      activityName: '《你好，我是蛇》2025/07/06(日)10:30~12:00',
-      name: '林玟琳',
-      gender: '女',
-      age: '29',
-      email: 'hudi8505@gmail.com',
-      phone: '0935973588',
-      lineId: 'yeah8505',
-      childrenCount: '',
-      isResident: '是',
-      housingLocation: '',
-      sportsExperience: '',
-      injuryHistory: '',
-      infoSource: 'FB粉專（興隆社宅2區：興生活隆底家）',
-      suggestions: '可以帶三歲小孩一起參加嗎',
-      submitTime: '2025-06-20 13:50:03',
-      key: 'hudi8505@gmail.com_0935973588'
-    },
-    {
-      id: '3',
-      activityName: '《手作「興」生活—編織手工書》2025/7/30 14:00-16:00',
-      name: '蔡孟錦',
-      gender: '女',
-      age: '',
-      email: 'eva043142@gmail.com',
-      phone: '0930431331',
-      lineId: 'eva431331',
-      childrenCount: '',
-      isResident: '否，我是文山區鄰近居民',
-      housingLocation: '',
-      sportsExperience: '',
-      injuryHistory: '',
-      infoSource: 'FB粉專（興隆社宅2區：興生活隆底家）',
-      suggestions: '謝謝辦理活動 辛苦了',
-      submitTime: '2025-06-20 13:51:46',
-      key: 'eva043142@gmail.com_0930431331'
-    }
-  ]);
-  
+
   const { toast } = useToast();
-  const { registrants, loading, fetchRegistrants, migrateExistingData } = useRegistrants();
+  const { registrants, loading, fetchRegistrants } = useRegistrants();
+
+  const allRegistrationHistory = useMemo(() => {
+    return registrants.flatMap((registrant) =>
+      registrant.history.map((historyItem) => ({
+        ...historyItem,
+        id: historyItem.id,
+        name: registrant.name,
+        gender: registrant.gender,
+        email: registrant.email,
+        phone: registrant.phone,
+        lineId: registrant.line_id,
+        isResident: registrant.is_resident,
+      }))
+    );
+  }, [registrants]);
 
   const quickLinks = [
     {
-      title: '青創資料區',
-      description: '管理青創相關文件資料',
-      url: 'https://drive.google.com/drive/folders/1MtDunKyxLboyIaxlTRFZD2XV-AOS5WTf',
+      title: "青創資料區",
+      description: "管理青創相關文件資料",
+      url: "https://drive.google.com/drive/folders/1MtDunKyxLboyIaxlTRFZD2XV-AOS5WTf",
       icon: FileSpreadsheet,
-      color: 'bg-blue-500 hover:bg-blue-600'
+      color: "bg-blue-500 hover:bg-blue-600",
     },
     {
-      title: '核銷憑證上傳區',
-      description: '上傳與管理核銷憑證',
-      url: 'https://drive.google.com/drive/folders/1o5YO86al3uJtXVomVoXPgZINKhgfosJ5?lfhs=2',
+      title: "核銷憑證上傳區",
+      description: "上傳與管理核銷憑證",
+      url: "https://drive.google.com/drive/folders/1o5YO86al3uJtXVomVoXPgZINKhgfosJ5?lfhs=2",
       icon: Upload,
-      color: 'bg-green-500 hover:bg-green-600'
+      color: "bg-green-500 hover:bg-green-600",
     },
     {
-      title: '平台組排班表',
-      description: '查看與編輯排班安排',
-      url: 'https://docs.google.com/spreadsheets/d/1HkU3fpYSDLtKol_ve6RlQpBuTx6HpO-l8EElcQMumTg/edit?gid=675656032#gid=675656032',
+      title: "平台組排班表",
+      description: "查看與編輯排班安排",
+      url: "https://docs.google.com/spreadsheets/d/1HkU3fpYSDLtKol_ve6RlQpBuTx6HpO-l8EElcQMumTg/edit?gid=675656032#gid=675656032",
       icon: Clock,
-      color: 'bg-orange-500 hover:bg-orange-600'
+      color: "bg-orange-500 hover:bg-orange-600",
     },
     {
-      title: '活動總表',
-      description: '管理所有活動資訊',
-      url: 'https://docs.google.com/spreadsheets/d/1pUWFjSF0PONrs-THNAPP9VpeA0BffZOfJSFevd_QdD8/edit?gid=1939795808#gid=1939795808',
+      title: "活動總表",
+      description: "管理所有活動資訊",
+      url: "https://docs.google.com/spreadsheets/d/1pUWFjSF0PONrs-THNAPP9VpeA0BffZOfJSFevd_QdD8",
       icon: Calendar,
-      color: 'bg-purple-500 hover:bg-purple-600'
+      color: "bg-purple-500 hover:bg-purple-600",
     },
     {
-      title: '請款記錄表',
-      description: '管理財務請款記錄',
-      url: 'https://docs.google.com/spreadsheets/d/19viECOJBZ9dSQ2PyiKA7oWRNoMSeTF_6/edit?gid=12210529#gid=12210529',
+      title: "請款記錄表",
+      description: "管理財務請款記錄",
+      url: "https://docs.google.com/spreadsheets/d/19viECOJBZ9dSQ2PyiKA7oWRNoMSeTF_6/edit?gid=12210529#gid=12210529",
       icon: DollarSign,
-      color: 'bg-red-500 hover:bg-red-600'
-    }
+      color: "bg-red-500 hover:bg-red-600",
+    },
   ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      console.log('檔案已選擇:', selectedFile.name);
+      console.log("檔案已選擇:", selectedFile.name);
     }
   };
 
@@ -153,14 +133,14 @@ const Index = () => {
       toast({
         title: "請選擇檔案",
         description: "請先選擇要上傳的 Excel 檔案",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     setUploading(true);
-    console.log('開始處理檔案:', file.name);
-    
+    console.log("開始處理檔案:", file.name);
+
     toast({
       title: "檔案處理中",
       description: `正在處理 ${file.name}，請稍候...`,
@@ -168,33 +148,35 @@ const Index = () => {
 
     try {
       const result = await processExcelFile(file);
-      
+
       if (result.success) {
         toast({
           title: "處理成功",
           description: result.message,
         });
-        
+
         // 重新載入報名者資料
         await fetchRegistrants();
-        
+
         // 重置檔案輸入
         setFile(null);
-        const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
+        const fileInput = document.getElementById(
+          "file-upload"
+        ) as HTMLInputElement;
+        if (fileInput) fileInput.value = "";
       } else {
         toast({
           title: "處理失敗",
           description: result.message,
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('檔案處理錯誤:', error);
+      console.error("檔案處理錯誤:", error);
       toast({
         title: "處理失敗",
         description: "檔案處理時發生未預期的錯誤",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setUploading(false);
@@ -203,7 +185,7 @@ const Index = () => {
 
   const handleQuickLinkClick = (url: string, title: string) => {
     console.log(`開啟連結: ${title} - ${url}`);
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   const handleViewRegistrant = (registrant: RegistrantWithHistory) => {
@@ -234,7 +216,10 @@ const Index = () => {
               <Users className="w-4 h-4" />
               報名資料
             </TabsTrigger>
-            <TabsTrigger value="registrants" className="flex items-center gap-2">
+            <TabsTrigger
+              value="registrants"
+              className="flex items-center gap-2"
+            >
               <UserCheck className="w-4 h-4" />
               報名者清單
             </TabsTrigger>
@@ -253,7 +238,9 @@ const Index = () => {
                   Excel 報名表上傳
                 </CardTitle>
                 <CardDescription>
-                  上傳 Excel 檔案來更新報名者資料到資料庫（系統會自動處理重複報名者，以 email + 手機號碼作為唯一識別）
+                  上傳 Excel
+                  檔案來更新報名者資料到資料庫（系統會自動處理重複報名者，以
+                  email + 手機號碼作為唯一識別）
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -273,13 +260,13 @@ const Index = () => {
                     </p>
                   )}
                 </div>
-                <Button 
+                <Button
                   onClick={handleUploadSubmit}
                   className="w-full"
                   disabled={!file || uploading}
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  {uploading ? '處理中...' : '上傳並更新資料庫'}
+                  {uploading ? "處理中..." : "上傳並更新資料庫"}
                 </Button>
               </CardContent>
             </Card>
@@ -295,12 +282,10 @@ const Index = () => {
                     報名資料總覽
                   </div>
                   <Badge variant="secondary">
-                    總計 {registrations.length} 筆資料
+                    總計 {allRegistrationHistory.length} 筆資料
                   </Badge>
                 </CardTitle>
-                <CardDescription>
-                  目前資料庫中的所有報名者資料
-                </CardDescription>
+                <CardDescription>目前資料庫中的所有報名者資料</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="rounded-md border overflow-x-auto">
@@ -320,30 +305,38 @@ const Index = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {registrations.map((registration) => (
+                      {allRegistrationHistory.map((registration) => (
                         <TableRow key={registration.id}>
                           <TableCell className="max-w-xs truncate">
-                            {registration.activityName}
+                            {registration.activity_name}
                           </TableCell>
                           <TableCell className="font-medium">
                             {registration.name}
                           </TableCell>
                           <TableCell>{registration.gender}</TableCell>
-                          <TableCell>{registration.age || '-'}</TableCell>
+                          <TableCell>{registration.age || "-"}</TableCell>
                           <TableCell>{registration.email}</TableCell>
                           <TableCell>{registration.phone}</TableCell>
-                          <TableCell>{registration.lineId || '-'}</TableCell>
+                          <TableCell>{registration.lineId || "-"}</TableCell>
                           <TableCell>
-                            <Badge 
-                              variant={registration.isResident.includes('是') ? 'default' : 'secondary'}
+                            <Badge
+                              variant={
+                                registration.isResident
+                                  ? "default"
+                                  : "secondary"
+                              }
                             >
-                              {registration.isResident.includes('是') ? '住戶' : '非住戶'}
+                              {registration.isResident ? "住戶" : "非住戶"}
                             </Badge>
                           </TableCell>
                           <TableCell className="max-w-xs truncate">
-                            {registration.infoSource || '-'}
+                            {registration.info_source || "-"}
                           </TableCell>
-                          <TableCell>{registration.submitTime}</TableCell>
+                          <TableCell>
+                            {registration.submit_time
+                              .toDate()
+                              .toLocaleDateString("zh-TW")}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -366,12 +359,8 @@ const Index = () => {
                     <Badge variant="secondary">
                       總計 {registrants.length} 位報名者
                     </Badge>
-                    <Button 
-                      onClick={migrateExistingData}
-                      variant="outline"
-                      size="sm"
-                    >
-                      遷移現有資料
+                    <Button onClick={() => {}} variant="outline" size="sm">
+                      遷移現有資料disabled
                     </Button>
                   </div>
                 </CardTitle>
@@ -398,30 +387,38 @@ const Index = () => {
                       <TableBody>
                         {registrants.map((registrant) => {
                           const latestRegistration = registrant.history.sort(
-                            (a, b) => new Date(b.submit_time).getTime() - new Date(a.submit_time).getTime()
+                            (a, b) =>
+                              b.submit_time.toDate().getTime() -
+                              a.submit_time.toDate().getTime()
                           )[0];
-                          
+
                           return (
                             <TableRow key={registrant.id}>
                               <TableCell className="font-medium">
                                 <div>
                                   <div>{registrant.name}</div>
                                   <div className="text-sm text-gray-500">
-                                    {registrant.gender || '-'}
+                                    {registrant.gender || "-"}
                                   </div>
                                 </div>
                               </TableCell>
                               <TableCell>
                                 <div className="text-sm">
                                   <div>{registrant.email}</div>
-                                  <div className="text-gray-500">{registrant.phone}</div>
+                                  <div className="text-gray-500">
+                                    {registrant.phone}
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <Badge 
-                                  variant={registrant.is_resident ? 'default' : 'secondary'}
+                                <Badge
+                                  variant={
+                                    registrant.is_resident
+                                      ? "default"
+                                      : "secondary"
+                                  }
                                 >
-                                  {registrant.is_resident ? '住戶' : '非住戶'}
+                                  {registrant.is_resident ? "住戶" : "非住戶"}
                                 </Badge>
                               </TableCell>
                               <TableCell>
@@ -430,16 +427,19 @@ const Index = () => {
                                 </Badge>
                               </TableCell>
                               <TableCell>
-                                {latestRegistration ? 
-                                  new Date(latestRegistration.submit_time).toLocaleDateString('zh-TW')
-                                  : '-'
-                                }
+                                {latestRegistration
+                                  ? latestRegistration.submit_time
+                                      .toDate()
+                                      .toLocaleDateString("zh-TW")
+                                  : "-"}
                               </TableCell>
                               <TableCell>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleViewRegistrant(registrant)}
+                                  onClick={() =>
+                                    handleViewRegistrant(registrant)
+                                  }
                                   className="flex items-center gap-1"
                                 >
                                   <Eye className="w-4 h-4" />
@@ -461,14 +461,16 @@ const Index = () => {
           <TabsContent value="links">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {quickLinks.map((link, index) => (
-                <Card 
-                  key={index} 
+                <Card
+                  key={index}
                   className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
                   onClick={() => handleQuickLinkClick(link.url, link.title)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <div className={`p-3 rounded-lg ${link.color} text-white`}>
+                      <div
+                        className={`p-3 rounded-lg ${link.color} text-white`}
+                      >
                         <link.icon className="w-6 h-6" />
                       </div>
                       <div className="flex-1">
@@ -494,28 +496,34 @@ const Index = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">總報名人數</p>
-                  <p className="text-2xl font-bold text-blue-600">{registrations.length}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    總報名人數
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {allRegistrationHistory.length}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">住戶報名數</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    住戶報名數
+                  </p>
                   <p className="text-2xl font-bold text-green-600">
-                    {registrations.filter(r => r.isResident.includes('是')).length}
+                    {allRegistrationHistory.filter((r) => r.isResident).length}
                   </p>
                 </div>
                 <Calendar className="w-8 h-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -533,7 +541,7 @@ const Index = () => {
       </div>
 
       {/* 報名者詳細資料對話框 */}
-      <RegistrantDetail 
+      <RegistrantDetail
         registrant={selectedRegistrant}
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}

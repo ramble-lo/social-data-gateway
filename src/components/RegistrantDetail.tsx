@@ -1,16 +1,22 @@
-
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Phone, Mail, Calendar, MapPin, MessageSquare } from 'lucide-react';
-import { RegistrantWithHistory } from '@/types/registrant';
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  User,
+  Phone,
+  Mail,
+  Calendar,
+  MapPin,
+  MessageSquare,
+} from "lucide-react";
+import { RegistrantWithHistory } from "@/types/registrant";
 
 interface RegistrantDetailProps {
   registrant: RegistrantWithHistory | null;
@@ -18,7 +24,11 @@ interface RegistrantDetailProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailProps) => {
+const RegistrantDetail = ({
+  registrant,
+  open,
+  onOpenChange,
+}: RegistrantDetailProps) => {
   if (!registrant) return null;
 
   return (
@@ -48,7 +58,7 @@ const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailPr
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">性別：</span>
-                <span>{registrant.gender || '-'}</span>
+                <span>{registrant.gender || "-"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-gray-500" />
@@ -62,13 +72,15 @@ const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailPr
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Line ID：</span>
-                <span>{registrant.line_id || '-'}</span>
+                <span>{registrant.line_id || "-"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">住戶身份：</span>
-                <Badge variant={registrant.is_resident ? 'default' : 'secondary'}>
-                  {registrant.is_resident ? '住戶' : '非住戶'}
+                <Badge
+                  variant={registrant.is_resident ? "default" : "secondary"}
+                >
+                  {registrant.is_resident ? "住戶" : "非住戶"}
                 </Badge>
               </div>
             </CardContent>
@@ -89,7 +101,10 @@ const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailPr
                 <p className="text-gray-500 text-center py-4">尚無報名記錄</p>
               ) : (
                 registrant.history.map((history) => (
-                  <Card key={history.id} className="border-l-4 border-l-blue-500">
+                  <Card
+                    key={history.id}
+                    className="border-l-4 border-l-blue-500"
+                  >
                     <CardContent className="pt-4">
                       <div className="space-y-3">
                         <div className="flex items-start justify-between">
@@ -98,10 +113,12 @@ const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailPr
                           </h4>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Calendar className="w-4 h-4" />
-                            {new Date(history.submit_time).toLocaleString('zh-TW')}
+                            {history.submit_time
+                              .toDate()
+                              .toLocaleString("zh-TW")}
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           {history.age && (
                             <div>
@@ -128,8 +145,12 @@ const RegistrantDetail = ({ registrant, open, onOpenChange }: RegistrantDetailPr
                             <div className="flex items-start gap-2">
                               <MessageSquare className="w-4 h-4 text-gray-500 mt-0.5" />
                               <div>
-                                <span className="text-sm text-gray-600">建議與備註：</span>
-                                <p className="text-sm mt-1">{history.suggestions}</p>
+                                <span className="text-sm text-gray-600">
+                                  建議與備註：
+                                </span>
+                                <p className="text-sm mt-1">
+                                  {history.suggestions}
+                                </p>
                               </div>
                             </div>
                           </div>
