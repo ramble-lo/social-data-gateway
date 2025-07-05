@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,10 +15,14 @@ import {
   MapPin,
   MessageSquare,
 } from "lucide-react";
-import { RegistrantWithHistory } from "@/types/registrant";
+import {
+  RegistrantFromFirebase,
+  ResidentStatusDisplayEnum,
+} from "@/types/registrant";
+import { useGetRegistrantHistoryById } from "@/api/registration";
 
 interface RegistrantDetailProps {
-  registrant: RegistrantWithHistory | null;
+  registrant: RegistrantFromFirebase | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -29,8 +32,10 @@ const RegistrantDetail = ({
   open,
   onOpenChange,
 }: RegistrantDetailProps) => {
-  if (!registrant) return null;
-
+  const { data: registrationHistory } = useGetRegistrantHistoryById(
+    registrant.id
+  );
+  if (!registrant || !registrationHistory) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -77,10 +82,8 @@ const RegistrantDetail = ({
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">住戶身份：</span>
-                <Badge
-                  variant={registrant.is_resident ? "default" : "secondary"}
-                >
-                  {registrant.is_resident ? "住戶" : "非住戶"}
+                <Badge variant={"default"}>
+                  {ResidentStatusDisplayEnum[registrant.residient_type]}
                 </Badge>
               </div>
             </CardContent>
@@ -92,15 +95,15 @@ const RegistrantDetail = ({
               <CardTitle className="text-lg flex items-center justify-between">
                 <span>報名歷史</span>
                 <Badge variant="outline">
-                  共 {registrant.history.length} 次報名
+                  共 {registrationHistory.length} 次報名
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {registrant.history.length === 0 ? (
+              {registrationHistory.length === 0 ? (
                 <p className="text-gray-500 text-center py-4">尚無報名記錄</p>
               ) : (
-                registrant.history.map((history) => (
+                registrationHistory.map((history) => (
                   <Card
                     key={history.id}
                     className="border-l-4 border-l-blue-500"
