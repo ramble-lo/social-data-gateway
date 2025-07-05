@@ -8,6 +8,12 @@ import {
   addDoc,
   Timestamp,
 } from "firebase/firestore";
+import {
+  Registrant,
+  Registration,
+  ResidentStatusEnum,
+  ResidentStatusType,
+} from "@/types/registrant";
 
 interface ExcelRowData {
   [key: string]: string | number | undefined;
@@ -37,9 +43,9 @@ export const processExcelFile = async (
         const age = String(row["參與者年齡"] || "");
         const lineId = String(row["Line ID（意者可留）"] || "");
         const childrenCount = String(row["小孩人數"] || "");
-        const isResidentText = String(
-          row["請問您是興隆社宅2區的住戶嗎？"] || ""
-        );
+        const residentStatus: ResidentStatusType =
+          ResidentStatusEnum[String(row["請問您是興隆社宅2區的住戶嗎？"])] ||
+          "other";
         const housingLocation = String(
           row["您是來自哪個臺北市社會住宅？"] || ""
         );
@@ -61,10 +67,6 @@ export const processExcelFile = async (
           continue;
         }
 
-        // 判斷是否為住戶
-        const isResident =
-          isResidentText.includes("是") || isResidentText.includes("住戶");
-
         // 處理提交時間
         let submitTime: Timestamp;
         if (submitTimeStr) {
@@ -81,57 +83,59 @@ export const processExcelFile = async (
 
         // 檢查報名者是否已存在
         const registrantsCollection = collection(db, "registrants");
-        const q = query(
+        const registrantsQuery = query(
           registrantsCollection,
           where("email", "==", email),
           where("phone", "==", phone)
         );
-        const existingRegistrantSnapshot = await getDocs(q);
+        const existingRegistrantSnapshot = await getDocs(registrantsQuery);
 
         let registrantId: string;
 
         if (existingRegistrantSnapshot.empty) {
-          // 建立新的報名者
-          const newRegistrantRef = await addDoc(collection(db, "registrants"), {
+          const registrant: Registrant = {
             name,
             email,
             phone,
-            gender: gender || null,
-            line_id: lineId || null,
-            is_resident: isResident,
-            housing_location: housingLocation || null,
-            created_at: new Date(),
-          });
+            gender,
+            age,
+            line_id: lineId,
+            residient_type: residentStatus,
+            created_at: Timestamp.fromDate(new Date()),
+            updated_at: Timestamp.fromDate(new Date()),
+          };
+          // 建立新的報名者
+          const newRegistrantRef = await addDoc(
+            collection(db, "registrants"),
+            registrant
+          );
           registrantId = newRegistrantRef.id;
         } else {
           registrantId = existingRegistrantSnapshot.docs[0].id;
         }
 
         // 檢查是否已有相同的報名歷史記錄
-        const historyCollection = collection(db, "registration_history");
-        const historyQuery = query(
-          historyCollection,
-          where("registrant_id", "==", registrantId),
-          where("activity_name", "==", activityName),
-          where("submit_time", "==", submitTime)
-        );
-        const existingHistorySnapshot = await getDocs(historyQuery);
-
-        if (existingHistorySnapshot.empty) {
-          // 新增報名歷史記錄
-          await addDoc(collection(db, "registration_history"), {
-            registrant_id: registrantId,
-            activity_name: activityName,
-            age: age || null,
-            children_count: childrenCount || null,
-            sports_experience: sportsExperience || null,
-            injury_history: injuryHistory || null,
-            info_source: infoSource || null,
-            suggestions: suggestions || null,
-            submit_time: submitTime,
-            created_at: new Date(),
-          });
-        }
+        const registration: Registration = {
+          registrant_id: registrantId,
+          activity_name: activityName,
+          name: name,
+          residient_type: residentStatus,
+          email: email,
+          phone: phone,
+          gender: gender || null,
+          line_id: lineId || null,
+          housing_location: housingLocation || null,
+          age: age || null,
+          children_count: childrenCount || null,
+          sports_experience: sportsExperience || null,
+          injury_history: injuryHistory || null,
+          info_source: infoSource || null,
+          suggestions: suggestions || null,
+          submit_time: submitTime,
+          created_at: Timestamp.fromDate(new Date()),
+        };
+        // 新增報名歷史記錄
+        await addDoc(collection(db, "registration_history"), registration);
 
         processedCount++;
       } catch (error) {
