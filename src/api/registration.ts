@@ -41,7 +41,7 @@ const useGetRegistrantionHistory = (
   options?: UseQueryOptions<RegistrationFromFirebase[], Error>
 ) => {
   return useQuery({
-    queryKey: ["registrantion-history"],
+    queryKey: ["registrantion_history"],
     queryFn: getRegistrantionHistory,
     ...options,
   });
