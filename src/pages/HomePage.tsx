@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Users, Link, UserCheck } from "lucide-react";
 import RegistrantionHistoryArea from "@/components/RegistrantionHistoryArea";
@@ -14,6 +15,7 @@ const HomePage = () => {
   const { userInfo } = useUserInfo();
 
   const isAdmin = userInfo?.role === "admin";
+  const [activeTab, setActiveTab] = useState(isAdmin ? "upload" : "links");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
@@ -31,7 +33,11 @@ const HomePage = () => {
           <UserProfile />
         </div>
 
-        <Tabs defaultValue={isAdmin ? "upload" : "data"} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList
             className={`grid w-full ${isAdmin ? "grid-cols-4" : "grid-cols-3"}`}
           >
@@ -41,6 +47,10 @@ const HomePage = () => {
                 資料上傳
               </TabsTrigger>
             ) : null}
+            <TabsTrigger value="links" className="flex items-center gap-2">
+              <Link className="w-4 h-4" />
+              快速連結
+            </TabsTrigger>
             <TabsTrigger value="data" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               報名資料
@@ -52,21 +62,16 @@ const HomePage = () => {
               <UserCheck className="w-4 h-4" />
               報名者清單
             </TabsTrigger>
-            <TabsTrigger value="links" className="flex items-center gap-2">
-              <Link className="w-4 h-4" />
-              快速連結
-            </TabsTrigger>
           </TabsList>
 
           {/* 資料上傳區域 */}
-          {isAdmin ? <UploadArea value="upload" /> : null}
-          {/* 資料顯示區域 */}
-          <RegistrantionHistoryArea value="data" />
-          {/* 新增報名者清單區域 */}
-          <RegistrantArea value="registrants" />
-
+          {isAdmin ? <UploadArea value="upload" activeTab={activeTab} /> : null}
           {/* 快速連結區域 */}
-          <QuickLinkArea value="links" />
+          <QuickLinkArea value="links" activeTab={activeTab} />
+          {/* 資料顯示區域 */}
+          <RegistrantionHistoryArea value="data" activeTab={activeTab} />
+          {/* 新增報名者清單區域 */}
+          <RegistrantArea value="registrants" activeTab={activeTab} />
         </Tabs>
 
         {/* 狀態監控區域 */}

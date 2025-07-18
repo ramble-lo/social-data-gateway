@@ -1,11 +1,17 @@
 import { useToast } from "@/components/ui/use-toast";
 import { useGetRegistrants } from "@/api/registration";
 
-export const useRegistrants = () => {
+interface UseRegistrantsProps {
+  isFocus?: boolean;
+}
+
+export const useRegistrants = ({
+  isFocus = true,
+}: UseRegistrantsProps = {}) => {
   const { toast } = useToast();
 
   const { data: registrants, isLoading: isGetRegistrantsLoading } =
-    useGetRegistrants();
+    useGetRegistrants({ enabled: isFocus });
 
   return {
     registrants,

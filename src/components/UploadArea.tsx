@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -40,7 +40,18 @@ interface RegistrantDetailProps {
   value: string;
 }
 
-const UploadArea = ({ value }: RegistrantDetailProps) => {
+interface UploadAreaProps {
+  value: string;
+  activeTab: string;
+}
+
+const UploadArea: React.FC<UploadAreaProps> = ({ value, activeTab }) => {
+  useEffect(() => {
+    if (activeTab === value) {
+      // fetch data here
+    }
+  }, [activeTab, value]);
+
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 

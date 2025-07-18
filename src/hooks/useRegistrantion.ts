@@ -7,17 +7,27 @@ import {
 import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-const useRegistrantion = (
-  page: number = 1,
-  pageSize: number = 10,
-  lastVisible?: QueryDocumentSnapshot<DocumentData> | null
-) => {
+interface UseRegistrantionProps {
+  page?: number;
+  pageSize?: number;
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null;
+  isFocus: boolean;
+}
+
+const useRegistrantion = ({
+  page = 1,
+  pageSize = 10,
+  lastVisible,
+  isFocus,
+}: UseRegistrantionProps) => {
   const { toast } = useToast();
   const {
     data,
     isLoading: isGetRegistrantionHistoryLoading,
     ...rest
-  } = useGetRegistrantionHistory(page, pageSize, lastVisible);
+  } = useGetRegistrantionHistory(page, pageSize, lastVisible, {
+    enabled: isFocus,
+  });
   const { data: totalCount } = useGetRegistrationHistoryCount();
 
   return {
