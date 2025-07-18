@@ -62,8 +62,7 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
     },
     {
       title: "青創社區行動紀錄表單(B表)",
-      description:
-        "記錄社區行動辦理後成果，每月初匯整前月數據，請各行動派代表填寫",
+      description: "記錄社區行動辦理後成果",
       url: "https://docs.google.com/forms/d/e/1FAIpQLSfx6I-JOq828gjKA_kltLDtDT5V704T7NapdKYRwnbn0ElNlQ/viewform",
       icon: Repeat2,
       color: "bg-amber-500 hover:bg-amber-600",
