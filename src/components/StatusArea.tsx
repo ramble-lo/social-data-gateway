@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Calendar } from "lucide-react";
 import { useRegistrants } from "@/hooks/useRegistrants";
+import { useGetRegistrationHistoryCount } from "@/api/registration";
 
 const StatusArea = () => {
-  const { registrants, registrantionHistory, loading } = useRegistrants();
+  const { registrants, loading } = useRegistrants();
+  const { data: totalCount } = useGetRegistrationHistoryCount();
 
   if (loading) return null;
 
@@ -14,9 +16,7 @@ const StatusArea = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">總報名人次</p>
-              <p className="text-2xl font-bold text-blue-600">
-                {registrantionHistory.length}
-              </p>
+              <p className="text-2xl font-bold text-blue-600">{totalCount}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>

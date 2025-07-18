@@ -164,6 +164,16 @@ const getRegistrationHistoryCount = async () => {
   return snapshot.data().count as number;
 };
 
+const useGetRegistrationHistoryCount = (
+  options?: UseQueryOptions<number, Error>
+) => {
+  return useQuery({
+    queryKey: ["registration_history_total_count"],
+    queryFn: getRegistrationHistoryCount,
+    ...options,
+  });
+};
+
 export {
   getRegistrantsFromFirebase,
   useGetRegistrants,
@@ -172,4 +182,5 @@ export {
   getRegistrantHistoryById,
   useGetRegistrantHistoryById,
   getRegistrationHistoryCount,
+  useGetRegistrationHistoryCount,
 };

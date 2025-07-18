@@ -23,6 +23,7 @@ import { useRegistrants } from "@/hooks/useRegistrants";
 import RegistrantDetail from "@/components/RegistrantDetail";
 import { ResidentStatusDisplayEnum } from "@/types/registrant";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { useGetRegistrationHistoryCount } from "@/api/registration";
 
 interface RegistrantDetailProps {
   value: string;
@@ -32,6 +33,7 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
   const [selectedRegistrant, setSelectedRegistrant] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const { registrants, loading } = useRegistrants();
+  const { data: totalCount } = useGetRegistrationHistoryCount();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -135,7 +137,7 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
           </CardContent>
           <CardFooter>
             <DataTablePagination
-              count={registrants?.length || 0}
+              totalCount={totalCount}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
