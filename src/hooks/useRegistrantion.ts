@@ -1,16 +1,35 @@
 import { useToast } from "@/components/ui/use-toast";
-import { useGetRegistrantionHistory } from "@/api/registration";
+import {
+  useGetRegistrantionHistory,
+  getRegistrationHistoryCount,
+} from "@/api/registration";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
-const useRegistrantion = () => {
+const useRegistrantion = (
+  page: number = 1,
+  pageSize: number = 10,
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null
+) => {
   const { toast } = useToast();
   const {
-    data: registrantionHistory,
+    data,
     isLoading: isGetRegistrantionHistoryLoading,
-  } = useGetRegistrantionHistory();
+    ...rest
+  } = useGetRegistrantionHistory(page, pageSize, lastVisible);
+
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getRegistrationHistoryCount().then(setTotalCount);
+  }, []);
 
   return {
-    registrantionHistory,
+    registrantionHistory: data?.data || [],
+    lastVisible: data?.lastVisible,
     loading: isGetRegistrantionHistoryLoading,
+    totalCount,
+    ...rest,
   };
 };
 

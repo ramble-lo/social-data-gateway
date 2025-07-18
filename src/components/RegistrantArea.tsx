@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,6 +22,7 @@ import { UserCheck, Eye } from "lucide-react";
 import { useRegistrants } from "@/hooks/useRegistrants";
 import RegistrantDetail from "@/components/RegistrantDetail";
 import { ResidentStatusDisplayEnum } from "@/types/registrant";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 interface RegistrantDetailProps {
   value: string;
@@ -30,6 +32,8 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
   const [selectedRegistrant, setSelectedRegistrant] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const { registrants, loading } = useRegistrants();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   if (loading) return null;
 
@@ -37,6 +41,13 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
     setSelectedRegistrant(registrant);
     setDetailDialogOpen(true);
   };
+
+  const paginatedRegistrants =
+    registrants?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    ) || [];
+
   return (
     <>
       <TabsContent value={value}>
@@ -73,7 +84,7 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {registrants?.map((registrant) => {
+                    {paginatedRegistrants.map((registrant) => {
                       return (
                         <TableRow key={registrant.id}>
                           <TableCell className="font-medium">
@@ -122,6 +133,14 @@ const RegistrantArea = ({ value }: RegistrantDetailProps) => {
               </div>
             )}
           </CardContent>
+          <CardFooter>
+            <DataTablePagination
+              count={registrants?.length || 0}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+          </CardFooter>
         </Card>
       </TabsContent>
       {/* 報名者詳細資料對話框 */}
