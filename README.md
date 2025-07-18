@@ -1,73 +1,108 @@
-# Welcome to your Lovable project
+# Social Data Gateway
 
-## Project info
+The Social Data Gateway is a comprehensive, web-based platform designed to streamline community activity management for the Xinglong Social Housing (興隆社宅 2 區). It provides a centralized system for managing event registrations, participant data, and communication. The application features role-based access for administrators and residents, ensuring secure and efficient data handling.
 
-**URL**: https://lovable.dev/projects/2dfd77c0-7b89-4a64-8638-9bd645ae619d
+## Key Features
 
-## How can I edit this code?
+- **User Authentication**: Secure login and registration using email/password and Google OAuth, powered by Firebase Authentication.
+- **Role-Based Access Control**: Differentiated user experiences for administrators and residents.
+  - **Admin View**: Includes features for uploading registration data from Excel files, viewing all registration history, and managing participant lists.
+  - **User View**: Provides quick links to important resources and a view of their registration history.
+- **Data Management**:
+  - **Excel Upload**: Admins can upload event registration data in `.xlsx` format.
+  - **Registration History**: A paginated view of all historical registration data.
+  - **Participant List**: A paginated and searchable list of all unique participants.
+- **Responsive UI**: A modern and responsive user interface built with **React**, **TypeScript**, **Tailwind CSS**, and **Shadcn UI**.
+- **Client-Side Routing**: A seamless single-page application (SPA) experience using **React Router**.
+- **State Management**: Efficient data fetching and caching with **TanStack Query**.
 
-There are several ways of editing your application.
+## Technologies Used
 
-**Use Lovable**
+- **Frontend**: React, TypeScript, Vite
+- **UI Framework**: Tailwind CSS, Shadcn UI
+- **Routing**: React Router
+- **State Management**: TanStack Query (React Query)
+- **Backend & Authentication**: Firebase
+- **Form Handling**: React Hook Form, Zod
+- **Linting**: ESLint
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2dfd77c0-7b89-4a64-8638-9bd645ae619d) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
+- A [Firebase](https://firebase.google.com/) project with Authentication and Firestore enabled.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1.  **Clone the repository:**
 
-Follow these steps:
+    ```bash
+    git clone https://github.com/ramble-lo/social-data-gateway.git
+    cd social-data-gateway
+    ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2.  **Install dependencies:**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+    ```bash
+    npm install
+    ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3.  **Set up Firebase:**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+    - Create a `src/integrations/firebase/client.ts` file.
+    - Add your Firebase project configuration to this file. You can get this from your Firebase project settings.
 
-**Edit a file directly in GitHub**
+    ```typescript
+    // src/integrations/firebase/client.ts
+    import { initializeApp } from "firebase/app";
+    import { getAuth } from "firebase/auth";
+    import { getFirestore } from "firebase/firestore";
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+    };
 
-**Use GitHub Codespaces**
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+    export { app, auth, db };
+    ```
 
-## What technologies are used for this project?
+### Running the Application
 
-This project is built with:
+- **Development Mode:**
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+  ```bash
+  yarn dev
+  ```
 
-## How can I deploy this project?
+  This will start the Vite development server, typically at `http://localhost:5173`.
 
-Simply open [Lovable](https://lovable.dev/projects/2dfd77c0-7b89-4a64-8638-9bd645ae619d) and click on Share -> Publish.
+- **Production Build:**
 
-## Can I connect a custom domain to my Lovable project?
+  ```bash
+  yarn build
+  ```
 
-Yes, you can!
+  This will create a `dist` directory with the optimized production build.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Preview Production Build:**
+  ```bash
+  yarn preview
+  ```
+  This will serve the production build locally for testing.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Available Scripts
+
+- `yarn dev`: Starts the development server.
+- `yarn build`: Builds the application for production.
+- `yarn lint`: Lints the codebase using ESLint.
+- `yarn preview`: Serves the production build locally.
