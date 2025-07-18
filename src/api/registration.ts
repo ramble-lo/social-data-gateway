@@ -11,6 +11,11 @@ import {
   doc,
   writeBatch,
   getDoc,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
+  getCountFromServer,
 } from "firebase/firestore";
 import {
   Registrant,
@@ -26,23 +31,57 @@ import {
   UseMutationOptions,
 } from "@tanstack/react-query";
 
-const getRegistrantionHistory = async () => {
+// Paginated registration history fetcher
+const getRegistrantionHistory = async (
+  page: number = 1,
+  pageSize: number = 10,
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null
+) => {
+  console.log("getRegistrantionHistory");
+
   const registrationHistoryCollection = collection(db, "registration_history");
-  const registrationHistorySnapshot = await getDocs(
-    registrationHistoryCollection
+  let q = query(
+    registrationHistoryCollection,
+    orderBy("submit_time", "desc"),
+    limit(pageSize)
   );
+  if (lastVisible) {
+    q = query(
+      registrationHistoryCollection,
+      orderBy("submit_time", "desc"),
+      startAfter(lastVisible),
+      limit(pageSize)
+    );
+  }
+  const registrationHistorySnapshot = await getDocs(q);
   const registrationHistoryData = registrationHistorySnapshot.docs.map(
     (doc) => ({ id: doc.id, ...doc.data() } as RegistrationFromFirebase)
   );
-  return registrationHistoryData;
+  const newLastVisible =
+    registrationHistorySnapshot.docs.length > 0
+      ? registrationHistorySnapshot.docs[
+          registrationHistorySnapshot.docs.length - 1
+        ]
+      : null;
+  return { data: registrationHistoryData, lastVisible: newLastVisible };
 };
 
 const useGetRegistrantionHistory = (
-  options?: UseQueryOptions<RegistrationFromFirebase[], Error>
+  page: number = 1,
+  pageSize: number = 10,
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null,
+  options?: UseQueryOptions<
+    {
+      data: RegistrationFromFirebase[];
+      lastVisible: QueryDocumentSnapshot<DocumentData> | null;
+    },
+    Error
+  >
 ) => {
   return useQuery({
-    queryKey: ["registrantion_history"],
-    queryFn: getRegistrantionHistory,
+    queryKey: ["registrantion_history", page, pageSize, lastVisible?.id],
+    queryFn: () => getRegistrantionHistory(page, pageSize, lastVisible),
+    refetchOnWindowFocus: false,
     ...options,
   });
 };
@@ -118,6 +157,13 @@ const useGetRegistrantHistoryById = (
   });
 };
 
+// Get total count of registration_history documents
+const getRegistrationHistoryCount = async () => {
+  const coll = collection(db, "registration_history");
+  const snapshot = await getCountFromServer(coll);
+  return snapshot.data().count as number;
+};
+
 export {
   getRegistrantsFromFirebase,
   useGetRegistrants,
@@ -125,4 +171,5 @@ export {
   useGetRegistrantionHistory,
   getRegistrantHistoryById,
   useGetRegistrantHistoryById,
+  getRegistrationHistoryCount,
 };

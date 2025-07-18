@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -18,15 +19,54 @@ import {
 } from "./ui/table";
 import useRegistrantion from "@/hooks/useRegistrantion";
 import { ResidentStatusDisplayEnum } from "@/types/registrant";
+import { useState, useRef } from "react";
+import { DataTablePagination } from "./ui/data-table-pagination";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 
 interface RegistrantDetailProps {
   value: string;
 }
 
+const itemsPerPage = 10;
+
 const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
-  const { registrantionHistory } = useRegistrantion();
-  // useRegistrants
-  if (!registrantionHistory) return null;
+  const [currentPage, setCurrentPage] = useState(1);
+  // Stack to keep track of lastVisible for each page
+  const lastVisibleStack = useRef<
+    (QueryDocumentSnapshot<DocumentData> | null)[]
+  >([null]);
+
+  // Get the lastVisible for the current page (null for first page)
+  const lastVisible = lastVisibleStack.current[currentPage - 1] || null;
+
+  const {
+    registrantionHistory,
+    lastVisible: newLastVisible,
+    loading,
+    totalCount,
+  } = useRegistrantion(currentPage, itemsPerPage, lastVisible);
+
+  // When page changes, update the lastVisibleStack
+  const handlePageChange = async (page: number) => {
+    if (page === currentPage) return;
+    if (page > lastVisibleStack.current.length) {
+      // Need to walk forward to get the cursor for the target page
+      const lastCursor =
+        lastVisibleStack.current[lastVisibleStack.current.length - 1];
+      let nextCursor = lastCursor;
+      for (let p = lastVisibleStack.current.length; p < page; p++) {
+        // Fetch the next page cursor
+        // Use the same hook logic, but only for cursor
+        // This is a hack: you may want to refactor to expose a cursor-fetcher
+        const res = await import("@/api/registration").then((m) =>
+          m.getRegistrantionHistory(p, itemsPerPage, nextCursor)
+        );
+        nextCursor = res.lastVisible;
+        lastVisibleStack.current.push(nextCursor);
+      }
+    }
+    setCurrentPage(page);
+  };
 
   return (
     <TabsContent value={value}>
@@ -37,9 +77,7 @@ const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
               <Users className="w-5 h-5" />
               報名資料總覽
             </div>
-            <Badge variant="secondary">
-              總計 {registrantionHistory.length} 筆資料
-            </Badge>
+            {/* Hide total count since we don't have it with paginated fetch */}
           </CardTitle>
           <CardDescription>目前資料庫中的所有報名者資料</CardDescription>
         </CardHeader>
@@ -89,8 +127,17 @@ const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
                 ))}
               </TableBody>
             </Table>
+            {loading && <div className="p-4 text-center">載入中...</div>}
           </div>
         </CardContent>
+        <CardFooter>
+          <DataTablePagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            totalCount={totalCount || 0}
+            itemsPerPage={itemsPerPage}
+          />
+        </CardFooter>
       </Card>
     </TabsContent>
   );
