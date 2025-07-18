@@ -100,7 +100,7 @@ const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
               </TableHeader>
               <TableBody>
                 {registrantionHistory.map((registration) => (
-                  <TableRow key={registration.id}>
+                  <TableRow key={registration.id} className="h-24">
                     <TableCell>{registration.activity_name}</TableCell>
                     <TableCell className="font-medium max-w-xl truncate">
                       {registration.name}
@@ -127,7 +127,9 @@ const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
                 ))}
               </TableBody>
             </Table>
-            {loading && <div className="p-4 text-center">載入中...</div>}
+            {loading && (
+              <div className="p-4 text-center h-[960px]">載入中...</div>
+            )}
           </div>
         </CardContent>
         <CardFooter>
