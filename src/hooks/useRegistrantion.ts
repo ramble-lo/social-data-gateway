@@ -2,6 +2,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useGetRegistrantionHistory,
   getRegistrationHistoryCount,
+  useGetRegistrationHistoryCount,
 } from "@/api/registration";
 import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -17,12 +18,7 @@ const useRegistrantion = (
     isLoading: isGetRegistrantionHistoryLoading,
     ...rest
   } = useGetRegistrantionHistory(page, pageSize, lastVisible);
-
-  const [totalCount, setTotalCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    getRegistrationHistoryCount().then(setTotalCount);
-  }, []);
+  const { data: totalCount } = useGetRegistrationHistoryCount();
 
   return {
     registrantionHistory: data?.data || [],
