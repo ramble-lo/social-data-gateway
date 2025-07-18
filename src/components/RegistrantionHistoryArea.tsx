@@ -22,14 +22,24 @@ import { ResidentStatusDisplayEnum } from "@/types/registrant";
 import { useState, useRef } from "react";
 import { DataTablePagination } from "./ui/data-table-pagination";
 import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import React, { useEffect } from "react";
 
 interface RegistrantDetailProps {
   value: string;
 }
 
+interface RegistrantionHistoryAreaProps {
+  value: string;
+  activeTab: string;
+}
+
 const itemsPerPage = 10;
 
-const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
+const RegistrantionHistoryArea: React.FC<RegistrantionHistoryAreaProps> = ({
+  value,
+  activeTab,
+}) => {
+  const isFocus = activeTab === value;
   const [currentPage, setCurrentPage] = useState(1);
   // Stack to keep track of lastVisible for each page
   const lastVisibleStack = useRef<
@@ -44,7 +54,12 @@ const RegistrantionHistoryArea = ({ value }: RegistrantDetailProps) => {
     lastVisible: newLastVisible,
     loading,
     totalCount,
-  } = useRegistrantion(currentPage, itemsPerPage, lastVisible);
+  } = useRegistrantion({
+    page: currentPage,
+    pageSize: itemsPerPage,
+    lastVisible,
+    isFocus,
+  });
 
   // When page changes, update the lastVisibleStack
   const handlePageChange = async (page: number) => {

@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import {
@@ -7,13 +8,22 @@ import {
   Calendar,
   DollarSign,
   Clock,
+  Repeat2,
+  Monitor,
 } from "lucide-react";
 
-interface RegistrantDetailProps {
+interface QuickLinkAreaProps {
   value: string;
+  activeTab: string;
 }
 
-const QuickLinkArea = ({ value }: RegistrantDetailProps) => {
+const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
+  useEffect(() => {
+    if (activeTab === value) {
+      // fetch data here
+    }
+  }, [activeTab, value]);
+
   const quickLinks = [
     {
       title: "青創資料區",
@@ -49,6 +59,21 @@ const QuickLinkArea = ({ value }: RegistrantDetailProps) => {
       url: "https://docs.google.com/spreadsheets/d/19viECOJBZ9dSQ2PyiKA7oWRNoMSeTF_6/edit?gid=12210529#gid=12210529",
       icon: DollarSign,
       color: "bg-red-500 hover:bg-red-600",
+    },
+    {
+      title: "青創社區行動紀錄表單(B表)",
+      description:
+        "記錄社區行動辦理後成果，每月初匯整前月數據，請各行動派代表填寫",
+      url: "https://docs.google.com/forms/d/e/1FAIpQLSfx6I-JOq828gjKA_kltLDtDT5V704T7NapdKYRwnbn0ElNlQ/viewform",
+      icon: Repeat2,
+      color: "bg-amber-500 hover:bg-amber-600",
+    },
+    {
+      title: "興隆導覽頁",
+      description: "綜合關連結資訊",
+      url: "https://docs.google.com/spreadsheets/d/1kRdajE017uFU9Paw6FZW9UAKKhyNvbGS/edit?gid=1065544107#gid=1065544107",
+      icon: Monitor,
+      color: "bg-teal-500 hover:bg-teal-600",
     },
   ];
 

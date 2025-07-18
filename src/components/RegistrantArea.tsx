@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
   Card,
@@ -25,15 +26,22 @@ import { ResidentStatusDisplayEnum } from "@/types/registrant";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useGetRegistrationHistoryCount } from "@/api/registration";
 
-interface RegistrantDetailProps {
+interface RegistrantAreaProps {
   value: string;
+  activeTab: string;
 }
 
-const RegistrantArea = ({ value }: RegistrantDetailProps) => {
+const RegistrantArea: React.FC<RegistrantAreaProps> = ({
+  value,
+  activeTab,
+}) => {
+  const isFocus = activeTab === value;
   const [selectedRegistrant, setSelectedRegistrant] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const { registrants, loading } = useRegistrants();
-  const { data: totalCount } = useGetRegistrationHistoryCount();
+  const { registrants, loading } = useRegistrants({ isFocus });
+  const { data: totalCount } = useGetRegistrationHistoryCount({
+    enabled: isFocus,
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 

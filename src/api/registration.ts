@@ -29,6 +29,7 @@ import {
   useQuery,
   useMutation,
   UseMutationOptions,
+  QueryKey,
 } from "@tanstack/react-query";
 
 // Paginated registration history fetcher
@@ -70,12 +71,14 @@ const useGetRegistrantionHistory = (
   page: number = 1,
   pageSize: number = 10,
   lastVisible?: QueryDocumentSnapshot<DocumentData> | null,
-  options?: UseQueryOptions<
-    {
-      data: RegistrationFromFirebase[];
-      lastVisible: QueryDocumentSnapshot<DocumentData> | null;
-    },
-    Error
+  options?: Partial<
+    UseQueryOptions<
+      {
+        data: RegistrationFromFirebase[];
+        lastVisible: QueryDocumentSnapshot<DocumentData> | null;
+      },
+      Error
+    >
   >
 ) => {
   return useQuery({
@@ -100,7 +103,7 @@ const getRegistrantsFromFirebase = async () => {
 };
 
 const useGetRegistrants = (
-  options?: UseQueryOptions<RegistrantFromFirebase[], Error>
+  options?: Partial<UseQueryOptions<RegistrantFromFirebase[], Error>>
 ) => {
   return useQuery({
     queryKey: ["registrants"],
@@ -165,7 +168,7 @@ const getRegistrationHistoryCount = async () => {
 };
 
 const useGetRegistrationHistoryCount = (
-  options?: UseQueryOptions<number, Error>
+  options?: Partial<UseQueryOptions<number, Error>>
 ) => {
   return useQuery({
     queryKey: ["registration_history_total_count"],
