@@ -65,7 +65,7 @@ export default function LoginForm() {
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">登入系統</CardTitle>
         <CardDescription className="text-center">
-          請輸入您的帳號密碼或使用 Google 登入
+          請輸入您的帳號密碼
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
