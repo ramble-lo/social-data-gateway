@@ -12,7 +12,15 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "@/integrations/firebase/client";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { addUserWithUniqueMail } from "@/api/user";
 
 interface AuthContextType {
@@ -22,6 +30,7 @@ interface AuthContextType {
   signup: (
     email: string,
     password: string,
+    communityCode: string,
     displayName?: string
   ) => Promise<UserCredential>;
   logout: () => Promise<void>;
@@ -43,24 +52,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  function signup(email: string, password: string, displayName?: string) {
-    return createUserWithEmailAndPassword(auth, email, password).then(
-      async (userCredential) => {
-        if (displayName) {
-          console.log(
-            "createUserWithEmailAndPassword displayName",
-            displayName
-          );
-          console.log(
-            "createUserWithEmailAndPassword userCredential",
-            userCredential
-          );
-          await addUserWithUniqueMail(userCredential.user, displayName);
-          await updateProfile(userCredential.user, { displayName });
-        }
-        return userCredential;
-      }
+  async function signup(
+    email: string,
+    password: string,
+    communityCode: string,
+    displayName?: string
+  ) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("community_code", "==", communityCode));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      throw new Error("該社區編碼已被註冊");
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
     );
+    await addUserWithUniqueMail(
+      userCredential.user,
+      communityCode,
+      displayName
+    );
+    if (displayName) {
+      await updateProfile(userCredential.user, { displayName });
+    }
+    return userCredential;
   }
 
   function login(email: string, password: string) {
