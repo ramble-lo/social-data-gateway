@@ -13,14 +13,14 @@ export default function AuthPage() {
 
   // Redirect to home if user is already authenticated
   useEffect(() => {
-    console.log(
-      "AuthPage useEffect - currentUser:",
-      currentUser,
-      "loading:",
-      loading
-    );
+    // console.log(
+    //   "AuthPage useEffect - currentUser:",
+    //   currentUser,
+    //   "loading:",
+    //   loading
+    // );
     if (!loading && currentUser) {
-      console.log("Redirecting to /home");
+      // console.log("Redirecting to /home");
       navigate("/home", { replace: true });
     }
   }, [currentUser, loading, navigate]);

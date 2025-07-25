@@ -10,25 +10,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Lock, Eye, EyeOff, User, Chrome } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Chrome, Building } from "lucide-react";
 
 export default function SignupForm() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [communityCode, setCommunityCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signup, loginWithGoogle } = useAuth();
 
+  const communityCodes = Array.from({ length: 30 }, (_, i) => `XL${String(i + 1).padStart(2, '0')}`);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !communityCode) {
       setError("請填寫所有欄位");
       return;
     }
@@ -46,7 +56,7 @@ export default function SignupForm() {
     try {
       setError("");
       setLoading(true);
-      await signup(email, password, displayName || undefined);
+      await signup(email, password, communityCode, displayName || undefined);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "註冊失敗");
     } finally {
@@ -54,17 +64,17 @@ export default function SignupForm() {
     }
   }
 
-  async function handleGoogleSignup() {
-    try {
-      setError("");
-      setLoading(true);
-      await loginWithGoogle();
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Google 註冊失敗");
-    } finally {
-      setLoading(false);
-    }
-  }
+  // async function handleGoogleSignup() {
+  //   try {
+  //     setError("");
+  //     setLoading(true);
+  //     await loginWithGoogle();
+  //   } catch (error: unknown) {
+  //     setError(error instanceof Error ? error.message : "Google 註冊失敗");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -89,6 +99,22 @@ export default function SignupForm() {
                 className="pl-10"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="communityCode">社區編碼</Label>
+            <Select onValueChange={setCommunityCode} value={communityCode}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="請選擇社區編碼" />
+              </SelectTrigger>
+              <SelectContent>
+                {communityCodes.map((code) => (
+                  <SelectItem key={code} value={code}>
+                    {code}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -176,16 +202,16 @@ export default function SignupForm() {
           </Button>
         </form>
 
-        <div className="relative">
+        {/* <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">或</span>
           </div>
-        </div>
+        </div> */}
 
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           className="w-full"
@@ -194,8 +220,9 @@ export default function SignupForm() {
         >
           <Chrome className="mr-2 h-4 w-4" />
           {loading ? "註冊中..." : "使用 Google 註冊"}
-        </Button>
+        </Button> */}
       </CardContent>
     </Card>
   );
 }
+

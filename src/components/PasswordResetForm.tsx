@@ -56,7 +56,7 @@ export default function PasswordResetForm({ onBack }: PasswordResetFormProps) {
         <CardContent className="space-y-4">
           <Alert>
             <AlertDescription>
-              我們已將密碼重設連結發送到您的電子郵件信箱。請檢查您的收件匣並點擊連結來重設密碼。
+              我們已將密碼重設連結發送到您的電子郵件信箱。請檢查您的收件匣或垃圾郵件並點擊連結來重設密碼。
             </AlertDescription>
           </Alert>
           <Button onClick={onBack} className="w-full" variant="outline">
