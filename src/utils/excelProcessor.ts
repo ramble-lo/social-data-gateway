@@ -31,6 +31,7 @@ export const processExcelFile = async (
 
     let processedCount = 0;
     let skippedCount = 0;
+    let duplicateCount = 0;
 
     for (const row of jsonData) {
       try {
@@ -38,6 +39,7 @@ export const processExcelFile = async (
         const activityName = String(row["以下活動請擇一"] || "");
         const name = String(row["姓名"] || "");
         const email = String(row["電子郵件"] || "");
+        const surveycakeHash = String(row["Hash"] || "");
         const phone = String(row["聯絡電話"] || "");
         const gender = String(row["性別"] || "");
         const age = String(row["參與者年齡"] || "");
@@ -85,7 +87,7 @@ export const processExcelFile = async (
         const registrantsCollection = collection(db, "registrants");
         const registrantsQuery = query(
           registrantsCollection,
-          where("email", "==", email),
+          where("name", "==", name),
           where("phone", "==", phone)
         );
         const existingRegistrantSnapshot = await getDocs(registrantsQuery);
@@ -115,8 +117,24 @@ export const processExcelFile = async (
         }
 
         // 檢查是否已有相同的報名歷史記錄
+        const registrationHistoryCollection = collection(
+          db,
+          "registration_history"
+        );
+        const registrationQuery = query(
+          registrationHistoryCollection,
+          where("surveycake_hash", "==", surveycakeHash)
+        );
+        const existingRegistrationSnapshot = await getDocs(registrationQuery);
+
+        if (!existingRegistrationSnapshot.empty) {
+          duplicateCount++;
+          continue; // 如果已存在，則跳過此筆資料
+        }
+
         const registration: Registration = {
           registrant_id: registrantId,
+          surveycake_hash: surveycakeHash,
           activity_name: activityName,
           name: name,
           residient_type: residentStatus,
@@ -144,9 +162,17 @@ export const processExcelFile = async (
       }
     }
 
+    const messageParts = [`成功處理 ${processedCount} 筆資料`];
+    if (skippedCount > 0) {
+      messageParts.push(`跳過 ${skippedCount} 筆無效資料`);
+    }
+    if (duplicateCount > 0) {
+      messageParts.push(`跳過 ${duplicateCount} 筆重複資料`);
+    }
+
     return {
       success: true,
-      message: `成功處理 ${processedCount} 筆資料，跳過 ${skippedCount} 筆無效資料`,
+      message: messageParts.join("，"),
       processedCount,
     };
   } catch (error) {
