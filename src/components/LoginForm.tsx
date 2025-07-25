@@ -135,7 +135,7 @@ export default function LoginForm() {
             {loading ? "登入中..." : "登入"}
           </Button>
         </form>
-
+        {/* 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <Separator className="w-full" />
@@ -143,9 +143,9 @@ export default function LoginForm() {
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">或</span>
           </div>
-        </div>
+        </div> */}
 
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           className="w-full"
@@ -154,7 +154,7 @@ export default function LoginForm() {
         >
           <Chrome className="mr-2 h-4 w-4" />
           {loading ? "登入中..." : "使用 Google 登入"}
-        </Button>
+        </Button> */}
       </CardContent>
     </Card>
   );
