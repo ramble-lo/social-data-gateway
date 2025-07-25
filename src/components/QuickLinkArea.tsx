@@ -11,6 +11,7 @@ import {
   Repeat2,
   Monitor,
 } from "lucide-react";
+import ReactGA from "react-ga4";
 
 interface QuickLinkAreaProps {
   value: string;
@@ -77,7 +78,11 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
   ];
 
   const handleQuickLinkClick = (url: string, title: string) => {
-    console.log(`開啟連結: ${title} - ${url}`);
+    ReactGA.event({
+      category: "QuickLink",
+      action: "Click",
+      label: title,
+    });
     window.open(url, "_blank");
   };
   return (
