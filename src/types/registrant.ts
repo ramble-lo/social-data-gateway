@@ -18,6 +18,7 @@ export interface RegistrantFromFirebase extends Registrant {
 export interface Registration {
   name: string;
   email: string;
+  surveycake_hash: string;
   phone: string;
   gender?: string;
   residient_type?: ResidentStatusType;

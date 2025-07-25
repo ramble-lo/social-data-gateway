@@ -130,8 +130,8 @@ const UploadArea: React.FC<UploadAreaProps> = ({ value, activeTab }) => {
           </CardTitle>
           <CardDescription>
             上傳 Excel
-            檔案來更新報名者資料到資料庫（系統會自動處理重複報名者，以 email +
-            手機號碼作為唯一識別）
+            檔案來更新報名者資料到資料庫（系統會自動處理重複報名者，以
+            姓名手機號碼作為唯一識別）
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
