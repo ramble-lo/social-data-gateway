@@ -25,8 +25,6 @@ export default function LoginForm() {
   const { login, loginWithGoogle } = useAuth();
 
   async function handleSubmit(e: React.FormEvent) {
-    console.log("handleSubmit");
-
     e.preventDefault();
 
     if (!email || !password) {
@@ -37,9 +35,7 @@ export default function LoginForm() {
     try {
       setError("");
       setLoading(true);
-      console.log("Attempting login with:", email);
       const result = await login(email, password);
-      console.log("Login successful:", result);
     } catch (error: unknown) {
       console.error("Login error:", error);
       setError(error instanceof Error ? error.message : "登入失敗");

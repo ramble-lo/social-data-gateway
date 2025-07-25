@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // TODO: Replace with your actual Firebase project configuration
 const firebaseConfig = {
@@ -15,6 +16,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize App Check
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6LdYro4rAAAAABcgjLMXMElT9M-yuBhgQpqGuenq"),
+  isTokenAutoRefreshEnabled: true,
+});
 
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
