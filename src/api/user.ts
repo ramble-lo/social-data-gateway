@@ -31,7 +31,7 @@ export async function addUserWithUniqueMail(
       return false;
     }
 
-    // 2. 查詢現有文件：檢查是否已存在相同的社區編碼
+    // 2. 查詢現有文件：檢查是否已存在相同的組別編號
     const communityCodeQuery = query(
       usersCollectionRef,
       where("community_code", "==", communityCode)
@@ -39,7 +39,7 @@ export async function addUserWithUniqueMail(
     const communityCodeQuerySnapshot = await getDocs(communityCodeQuery);
 
     if (!communityCodeQuerySnapshot.empty) {
-      console.warn(`社區編碼 ${communityCode} 已存在，無法新增使用者。`);
+      console.warn(`組別編號 ${communityCode} 已存在，無法新增使用者。`);
       return false;
     }
 
@@ -50,7 +50,7 @@ export async function addUserWithUniqueMail(
       community_code: communityCode,
       created_at: Timestamp.fromDate(new Date()),
     };
-    // 3. 條件式新增：如果信箱地址和社區編碼都不存在，則新增文件
+    // 3. 條件式新增：如果信箱地址和組別編號都不存在，則新增文件
     const docRef = await addDoc(usersCollectionRef, userInfo);
 
     // console.log("文件成功新增，ID：", docRef.id);
