@@ -27,6 +27,27 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
 
   const quickLinks = [
     {
+      title: "青創社區行動紀錄表單(B表)",
+      description: "記錄社區行動辦理後成果",
+      url: "https://docs.google.com/forms/d/e/1FAIpQLSfx6I-JOq828gjKA_kltLDtDT5V704T7NapdKYRwnbn0ElNlQ/viewform",
+      icon: Repeat2,
+      color: "bg-amber-500 hover:bg-amber-600",
+    },
+    {
+      title: "B表明細",
+      description: "B表活動辦理明細",
+      url: "https://docs.google.com/spreadsheets/d/1Dmzf9hA5y8RKHGFoUWi3Wzbdc5IGlrTTmOvi1r9J4YU",
+      icon: FileSpreadsheet,
+      color: "bg-cyan-500 hover:bg-cyan-600",
+    },
+    {
+      title: "每月活動總表",
+      description: "管理所有活動資訊",
+      url: "https://docs.google.com/spreadsheets/d/1pUWFjSF0PONrs-THNAPP9VpeA0BffZOfJSFevd_QdD8",
+      icon: Calendar,
+      color: "bg-purple-500 hover:bg-purple-600",
+    },
+    {
       title: "青創資料區",
       description: "管理青創相關文件資料",
       url: "https://drive.google.com/drive/folders/1MtDunKyxLboyIaxlTRFZD2XV-AOS5WTf",
@@ -48,25 +69,11 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
       color: "bg-orange-500 hover:bg-orange-600",
     },
     {
-      title: "活動總表",
-      description: "管理所有活動資訊",
-      url: "https://docs.google.com/spreadsheets/d/1pUWFjSF0PONrs-THNAPP9VpeA0BffZOfJSFevd_QdD8",
-      icon: Calendar,
-      color: "bg-purple-500 hover:bg-purple-600",
-    },
-    {
       title: "請款記錄表",
       description: "管理財務請款記錄",
       url: "https://docs.google.com/spreadsheets/d/19viECOJBZ9dSQ2PyiKA7oWRNoMSeTF_6/edit?gid=12210529#gid=12210529",
       icon: DollarSign,
       color: "bg-red-500 hover:bg-red-600",
-    },
-    {
-      title: "青創社區行動紀錄表單(B表)",
-      description: "記錄社區行動辦理後成果",
-      url: "https://docs.google.com/forms/d/e/1FAIpQLSfx6I-JOq828gjKA_kltLDtDT5V704T7NapdKYRwnbn0ElNlQ/viewform",
-      icon: Repeat2,
-      color: "bg-amber-500 hover:bg-amber-600",
     },
     {
       title: "興隆導覽頁",

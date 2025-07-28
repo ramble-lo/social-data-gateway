@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      throw new Error("該社區編碼已被註冊");
+      throw new Error("該組別編號已被註冊");
     }
 
     const userCredential = await createUserWithEmailAndPassword(

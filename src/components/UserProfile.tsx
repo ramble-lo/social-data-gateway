@@ -9,10 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Mail } from "lucide-react";
+import { LogOut, Building, Copy, User } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
 export default function UserProfile() {
   const { currentUser, logout } = useAuth();
+  const { toast } = useToast();
 
   if (!currentUser) {
     return null;
@@ -36,6 +40,19 @@ export default function UserProfile() {
       .slice(0, 2);
   };
 
+  const companyInfo = {
+    name: "共宅一生股份有限公司",
+    taxId: "52419147",
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "已複製！",
+      description: `${text} 已複製到剪貼簿。`,
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,7 +68,7 @@ export default function UserProfile() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
@@ -63,14 +80,34 @@ export default function UserProfile() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuItem disabled>
-          <User className="mr-2 h-4 w-4" />
-          <span>個人資料</span>
+        <DropdownMenuItem asChild>
+          <Link to="/user-info">
+            <User className="mr-2 h-4 w-4" />
+            <span>個人資料</span>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <Mail className="mr-2 h-4 w-4" />
-          <span>電子郵件</span>
-        </DropdownMenuItem> */}
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex items-center">
+            <Building className="mr-2 h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-col">
+              <span className="text-sm">{companyInfo.name}</span>
+              <div className="flex items-center">
+                <span className="text-xs text-muted-foreground">
+                  {companyInfo.taxId}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2 h-6 w-6"
+                  onClick={() => handleCopy(companyInfo.taxId)}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />

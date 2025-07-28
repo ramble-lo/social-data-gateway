@@ -33,7 +33,10 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const { signup, loginWithGoogle } = useAuth();
 
-  const communityCodes = Array.from({ length: 30 }, (_, i) => `XL${String(i + 1).padStart(2, '0')}`);
+  const communityCodes = Array.from(
+    { length: 30 },
+    (_, i) => `XL${String(i + 1).padStart(2, "0")}`
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -80,9 +83,7 @@ export default function SignupForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">註冊帳號</CardTitle>
-        <CardDescription className="text-center">
-          建立新的帳號或使用 Google 註冊
-        </CardDescription>
+        <CardDescription className="text-center">建立新的帳號</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -102,10 +103,10 @@ export default function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="communityCode">社區編碼</Label>
+            <Label htmlFor="communityCode">組別編號</Label>
             <Select onValueChange={setCommunityCode} value={communityCode}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="請選擇社區編碼" />
+                <SelectValue placeholder="請選擇組別編號" />
               </SelectTrigger>
               <SelectContent>
                 {communityCodes.map((code) => (
@@ -225,4 +226,3 @@ export default function SignupForm() {
     </Card>
   );
 }
-
