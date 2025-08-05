@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { isDevMode } from "@/lib/utils";
 
 // TODO: Replace with your actual Firebase project configuration
 const firebaseConfig = {
@@ -16,6 +17,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Enable App Check debug mode in development
+if (isDevMode()) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
 
 // Initialize App Check
 initializeAppCheck(app, {

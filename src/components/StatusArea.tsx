@@ -1,13 +1,43 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Calendar } from "lucide-react";
-import { useRegistrants } from "@/hooks/useRegistrants";
-import { useGetRegistrationHistoryCount } from "@/api/registration";
+import {
+  useGetRegistrationHistoryCount,
+  useGetRegistrantsCount,
+} from "@/api/registration";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StatusArea = () => {
-  const { registrants, loading } = useRegistrants();
-  const { data: totalCount } = useGetRegistrationHistoryCount();
+  const { data: registrationCount, isLoading: isRegistrationCountLoading } =
+    useGetRegistrationHistoryCount();
+  const { data: registrantsCount, isLoading: isRegistrantsCountLoading } =
+    useGetRegistrantsCount();
 
-  if (loading) return null;
+  const isLoading = isRegistrationCountLoading || isRegistrantsCountLoading;
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-10 w-1/4 mt-2" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-10 w-1/4 mt-2" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-10 w-1/4 mt-2" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -15,8 +45,12 @@ const StatusArea = () => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">總報名人次</p>
-              <p className="text-2xl font-bold text-blue-600">{totalCount}</p>
+              <p className="text-sm font-medium text-gray-600">
+                總報名活動人次
+              </p>
+              <p className="text-2xl font-bold text-blue-600">
+                {registrationCount}
+              </p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
@@ -29,7 +63,7 @@ const StatusArea = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">報名人數</p>
               <p className="text-2xl font-bold text-green-600">
-                {registrants.length}
+                {registrantsCount}
               </p>
             </div>
             <Calendar className="w-8 h-8 text-green-500" />

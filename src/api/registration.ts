@@ -177,6 +177,22 @@ const useGetRegistrationHistoryCount = (
   });
 };
 
+const getRegistrantsCount = async () => {
+  const registrantsCollection = collection(db, "registrants");
+  const snapshot = await getCountFromServer(registrantsCollection);
+  return snapshot.data().count;
+};
+
+const useGetRegistrantsCount = (
+  options?: Partial<UseQueryOptions<number, Error>>
+) => {
+  return useQuery<number, Error>({
+    queryKey: ["registrants_total_count"],
+    queryFn: getRegistrantsCount,
+    ...options,
+  });
+};
+
 export {
   getRegistrantsFromFirebase,
   useGetRegistrants,
@@ -186,4 +202,6 @@ export {
   useGetRegistrantHistoryById,
   getRegistrationHistoryCount,
   useGetRegistrationHistoryCount,
+  getRegistrantsCount,
+  useGetRegistrantsCount,
 };
