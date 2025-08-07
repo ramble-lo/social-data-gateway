@@ -37,9 +37,9 @@ const HomePage = () => {
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="space-y-6"
+          className="space-y-10"
         >
-          <TabsList className={`flex w-full`}>
+          <TabsList className={`flex flex-wrap w-full`}>
             <TabsTrigger value="links" className="flex-1 items-center gap-2">
               <Link className="w-4 h-4" />
               快速連結
