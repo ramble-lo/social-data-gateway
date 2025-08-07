@@ -46,12 +46,6 @@ interface UploadAreaProps {
 }
 
 const UploadArea: React.FC<UploadAreaProps> = ({ value, activeTab }) => {
-  useEffect(() => {
-    if (activeTab === value) {
-      // fetch data here
-    }
-  }, [activeTab, value]);
-
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 

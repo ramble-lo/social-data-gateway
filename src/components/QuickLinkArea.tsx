@@ -19,12 +19,6 @@ interface QuickLinkAreaProps {
 }
 
 const QuickLinkArea: React.FC<QuickLinkAreaProps> = ({ value, activeTab }) => {
-  useEffect(() => {
-    if (activeTab === value) {
-      // fetch data here
-    }
-  }, [activeTab, value]);
-
   const quickLinks = [
     {
       title: "青創社區行動紀錄表單(B表)",

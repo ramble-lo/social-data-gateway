@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Users, Link, UserCheck } from "lucide-react";
+import { Upload, Users, Link, UserCheck, Activity } from "lucide-react";
 import RegistrantionHistoryArea from "@/components/RegistrantionHistoryArea";
 import UploadArea from "@/components/UploadArea";
 import RegistrantArea from "@/components/RegistrantArea";
@@ -15,7 +15,8 @@ const HomePage = () => {
   const { userInfo } = useUserInfo();
 
   const isAdmin = userInfo?.role === "admin";
-  const [activeTab, setActiveTab] = useState(isAdmin ? "upload" : "links");
+  const isGuest = userInfo?.role === "guest";
+  const [activeTab, setActiveTab] = useState(isAdmin ? "status" : "links");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
@@ -38,44 +39,54 @@ const HomePage = () => {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList
-            className={`grid w-full ${isAdmin ? "grid-cols-4" : "grid-cols-3"}`}
-          >
+          <TabsList className={`flex w-full`}>
+            <TabsTrigger value="links" className="flex-1 items-center gap-2">
+              <Link className="w-4 h-4" />
+              快速連結
+            </TabsTrigger>
             {isAdmin ? (
-              <TabsTrigger value="upload" className="flex items-center gap-2">
+              <TabsTrigger value="upload" className="flex-1 items-center gap-2">
                 <Upload className="w-4 h-4" />
                 資料上傳
               </TabsTrigger>
             ) : null}
-            <TabsTrigger value="links" className="flex items-center gap-2">
-              <Link className="w-4 h-4" />
-              快速連結
-            </TabsTrigger>
-            <TabsTrigger value="data" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              報名資料
-            </TabsTrigger>
-            <TabsTrigger
-              value="registrants"
-              className="flex items-center gap-2"
-            >
-              <UserCheck className="w-4 h-4" />
-              報名者清單
-            </TabsTrigger>
+            {isAdmin ? (
+              <TabsTrigger value="status" className="flex-1 items-center gap-2">
+                <Activity className="w-4 h-4" />
+                狀態數據
+              </TabsTrigger>
+            ) : null}
+            {!isGuest ? (
+              <TabsTrigger value="data" className="flex-1 items-center gap-2">
+                <Users className="w-4 h-4" />
+                報名資料
+              </TabsTrigger>
+            ) : null}
+            {!isGuest ? (
+              <TabsTrigger
+                value="registrants"
+                className="flex-1 items-center gap-2"
+              >
+                <UserCheck className="w-4 h-4" />
+                報名者清單
+              </TabsTrigger>
+            ) : null}
           </TabsList>
-
-          {/* 資料上傳區域 */}
-          {isAdmin ? <UploadArea value="upload" activeTab={activeTab} /> : null}
           {/* 快速連結區域 */}
           <QuickLinkArea value="links" activeTab={activeTab} />
+          {/* 資料上傳區域 */}
+          {isAdmin ? <UploadArea value="upload" activeTab={activeTab} /> : null}
+          {/* 狀態監控區域 */}
+          {isAdmin ? <StatusArea value="status" activeTab={activeTab} /> : null}
           {/* 資料顯示區域 */}
-          <RegistrantionHistoryArea value="data" activeTab={activeTab} />
+          {!isGuest ? (
+            <RegistrantionHistoryArea value="data" activeTab={activeTab} />
+          ) : null}
           {/* 新增報名者清單區域 */}
-          <RegistrantArea value="registrants" activeTab={activeTab} />
+          {!isGuest ? (
+            <RegistrantArea value="registrants" activeTab={activeTab} />
+          ) : null}
         </Tabs>
-
-        {/* 狀態監控區域 */}
-        <StatusArea />
       </div>
     </div>
   );
