@@ -6,7 +6,7 @@ import { isDevMode } from "@/lib/utils";
 
 // TODO: Replace with your actual Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBOGV8mG0A_QzDQ_q2DtwaDE6UilYjSgJQ",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY!,
   authDomain: "xinlong-d2.firebaseapp.com",
   projectId: "xinlong-d2",
   storageBucket: "xinlong-d2.firebasestorage.app",
