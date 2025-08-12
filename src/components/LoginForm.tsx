@@ -117,7 +117,7 @@ export default function LoginForm() {
               <Button
                 type="button"
                 variant="link"
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-sm"
                 onClick={() => setShowPasswordReset(true)}
               >
                 忘記密碼？

@@ -57,31 +57,31 @@ const RegistrantDetail = ({
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">姓名：</span>
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">姓名：</span>
                 <span className="font-medium">{registrant.name}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">性別：</span>
+                <span className="text-sm text-muted-foreground">性別：</span>
                 <span>{registrant.gender || "-"}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">信箱：</span>
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">信箱：</span>
                 <span>{registrant.email}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">電話：</span>
+                <Phone className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">電話：</span>
                 <span>{registrant.phone}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Line ID：</span>
+                <span className="text-sm text-muted-foreground">Line ID：</span>
                 <span>{registrant.line_id || "-"}</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">住戶身份：</span>
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">住戶身份：</span>
                 <Badge variant={"default"}>
                   {ResidentStatusDisplayEnum[registrant.residient_type]}
                 </Badge>
@@ -101,20 +101,20 @@ const RegistrantDetail = ({
             </CardHeader>
             <CardContent className="space-y-4">
               {registrationHistory.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">尚無報名記錄</p>
+                <p className="text-muted-foreground text-center py-4">尚無報名記錄</p>
               ) : (
                 registrationHistory.map((history) => (
                   <Card
                     key={history.id}
-                    className="border-l-4 border-l-blue-500"
+                    className="border-l-4 border-l-foreground"
                   >
                     <CardContent className="pt-4">
                       <div className="space-y-3">
                         <div className="flex items-start justify-between">
-                          <h4 className="font-medium text-blue-900">
+                          <h4 className="font-medium">
                             {history.activity_name}
                           </h4>
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
                             {history.submit_time
                               .toDate()
@@ -125,19 +125,19 @@ const RegistrantDetail = ({
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           {history.age && (
                             <div>
-                              <span className="text-gray-600">年齡：</span>
+                              <span className="text-muted-foreground">年齡：</span>
                               <span>{history.age}</span>
                             </div>
                           )}
                           {history.children_count && (
                             <div>
-                              <span className="text-gray-600">兒童人數：</span>
+                              <span className="text-muted-foreground">兒童人數：</span>
                               <span>{history.children_count}</span>
                             </div>
                           )}
                           {history.info_source && (
                             <div className="col-span-2">
-                              <span className="text-gray-600">資訊來源：</span>
+                              <span className="text-muted-foreground">資訊來源：</span>
                               <span>{history.info_source}</span>
                             </div>
                           )}
@@ -146,9 +146,9 @@ const RegistrantDetail = ({
                         {history.suggestions && (
                           <div className="mt-3 p-3 bg-gray-50 rounded-md">
                             <div className="flex items-start gap-2">
-                              <MessageSquare className="w-4 h-4 text-gray-500 mt-0.5" />
+                              <MessageSquare className="w-4 h-4 text-muted-foreground mt-0.5" />
                               <div>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-sm text-muted-foreground">
                                   建議與備註：
                                 </span>
                                 <p className="text-sm mt-1">

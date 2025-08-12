@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { TabsContent } from "@radix-ui/react-tabs";
 import {
   Table,
   TableBody,
@@ -35,11 +34,8 @@ interface RegistrantionHistoryAreaProps {
 
 const itemsPerPage = 10;
 
-const RegistrantionHistoryArea: React.FC<RegistrantionHistoryAreaProps> = ({
-  value,
-  activeTab,
-}) => {
-  const isFocus = activeTab === value;
+const RegistrantionHistoryArea: React.FC<RegistrantionHistoryAreaProps> = () => {
+  const isFocus = true;
   const [currentPage, setCurrentPage] = useState(1);
   // Stack to keep track of lastVisible for each page
   const lastVisibleStack = useRef<
@@ -84,7 +80,7 @@ const RegistrantionHistoryArea: React.FC<RegistrantionHistoryAreaProps> = ({
   };
 
   return (
-    <TabsContent value={value}>
+    <div>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -156,7 +152,7 @@ const RegistrantionHistoryArea: React.FC<RegistrantionHistoryAreaProps> = ({
           />
         </CardFooter>
       </Card>
-    </TabsContent>
+    </div>
   );
 };
 

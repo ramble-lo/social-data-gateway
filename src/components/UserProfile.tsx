@@ -14,7 +14,11 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 
-export default function UserProfile() {
+interface UserProfileProps {
+  collapsed?: boolean;
+}
+
+export default function UserProfile({ collapsed = false }: UserProfileProps) {
   const { currentUser, logout } = useAuth();
   const { toast } = useToast();
 
@@ -56,8 +60,8 @@ export default function UserProfile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
+        <Button variant="ghost" className={`relative ${collapsed ? 'h-8 w-8' : 'h-10 w-full'} ${collapsed ? 'rounded-full' : 'rounded-lg justify-start'}`}>
+          <Avatar className={`${collapsed ? 'h-8 w-8' : 'h-8 w-8'}`}>
             <AvatarImage
               src={currentUser.photoURL || undefined}
               alt={currentUser.displayName || "User"}
@@ -66,6 +70,12 @@ export default function UserProfile() {
               {getInitials(currentUser.displayName)}
             </AvatarFallback>
           </Avatar>
+          {!collapsed && (
+            <div className="ml-3 flex-1 text-left">
+              <p className="text-sm font-medium">{currentUser.displayName || "使用者"}</p>
+              <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>
+            </div>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end" forceMount>

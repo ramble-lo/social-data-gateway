@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TabsContent } from "@/components/ui/tabs";
 import { UserCheck, Eye } from "lucide-react";
 import { useRegistrants } from "@/hooks/useRegistrants";
 import RegistrantDetail from "@/components/RegistrantDetail";
@@ -31,11 +30,8 @@ interface RegistrantAreaProps {
   activeTab: string;
 }
 
-const RegistrantArea: React.FC<RegistrantAreaProps> = ({
-  value,
-  activeTab,
-}) => {
-  const isFocus = activeTab === value;
+const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
+  const isFocus = true;
   const [selectedRegistrant, setSelectedRegistrant] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const { registrants, loading } = useRegistrants({ isFocus });
@@ -60,7 +56,7 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = ({
 
   return (
     <>
-      <TabsContent value={value}>
+      <div>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -152,7 +148,7 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = ({
             />
           </CardFooter>
         </Card>
-      </TabsContent>
+      </div>
       {/* 報名者詳細資料對話框 */}
       {selectedRegistrant ? (
         <RegistrantDetail
