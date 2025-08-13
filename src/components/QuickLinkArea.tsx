@@ -98,7 +98,7 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = () => {
                   <link.icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-sm font-medium leading-tight">
+                  <CardTitle className="text-base font-medium leading-tight">
                     {link.title}
                   </CardTitle>
                 </div>

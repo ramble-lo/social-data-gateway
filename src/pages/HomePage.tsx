@@ -30,7 +30,7 @@ import useUserInfo from "@/hooks/useUserInfo";
 const HomePage = () => {
   const { currentUser, loading } = useAuth();
   const { userInfo } = useUserInfo();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const isAdmin = userInfo?.role === "admin";
   const isGuest = userInfo?.role === "guest";
@@ -87,24 +87,32 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div
+      className="flex bg-background"
+      style={{
+        position: "fixed",
+        width: "100%",
+        height: "100dvh", // Use dynamic viewport height for mobile browsers
+        overflow: "hidden",
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
       {/* Sidebar Overlay */}
       {!sidebarCollapsed && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarCollapsed(true)}
         />
       )}
-      
+
       {/* Sidebar */}
       <div
-        className={`${
-          sidebarCollapsed 
-            ? "w-16 hidden lg:flex" 
-            : "w-full lg:w-80"
-        } transition-all duration-300 border-r flex flex-col bg-background ${
-          sidebarCollapsed 
-            ? "relative" 
+        className={`
+          transition-all duration-300 border-r flex flex-col bg-background
+          ${sidebarCollapsed ? "w-16 hidden lg:flex" : "w-full lg:w-80"} ${
+          sidebarCollapsed
+            ? "relative"
             : "fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto"
         }`}
       >
@@ -112,9 +120,11 @@ const HomePage = () => {
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
-              <div>
-                <h1 className="font-semibold text-sm">社區活動管理系統</h1>
-                <p className="text-xs text-muted-foreground">興隆社宅2區</p>
+              <div className="w-full">
+                <h1 className="font-semibold text-sm w-64">社區活動管理系統</h1>
+                <p className="text-xs text-muted-foreground w-64">
+                  興隆社宅2區
+                </p>
               </div>
             )}
             <Button
@@ -135,8 +145,10 @@ const HomePage = () => {
               <Button
                 key={item.id}
                 variant={activeView === item.id ? "secondary" : "ghost"}
-                className={`w-full justify-start ${
-                  sidebarCollapsed ? "px-2" : "px-3"
+                className={`w-full  ${
+                  sidebarCollapsed
+                    ? "px-2 justify-center"
+                    : "px-3 justify-start"
                 } h-9`}
                 onClick={() => {
                   setActiveView(item.id);
@@ -162,11 +174,20 @@ const HomePage = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col overflow-hidden ${
-        !sidebarCollapsed ? "lg:ml-0" : ""
-      }`}>
+      <div
+        className="flex-1 flex flex-col"
+        style={{ height: "100%", overflow: "hidden" }}
+      >
         {/* Header */}
-        <header className="border-b p-4">
+        <header
+          className="border-b p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-30"
+          style={{
+            position: "sticky",
+            top: 0,
+            minHeight: "fit-content",
+            flexShrink: 0,
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {/* Mobile Menu Button */}
@@ -197,7 +218,18 @@ const HomePage = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6">{renderMainContent()}</main>
+        <main
+          className="flex-1 p-6"
+          style={{
+            paddingBottom: "1.5rem",
+            overflow: "auto",
+            WebkitOverflowScrolling: "touch",
+            position: "relative",
+            minHeight: 0, // Allow flex item to shrink
+          }}
+        >
+          {renderMainContent()}
+        </main>
       </div>
     </div>
   );

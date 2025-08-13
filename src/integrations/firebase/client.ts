@@ -26,7 +26,7 @@ if (isDevMode()) {
 
 // Initialize App Check
 initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider("6LdYro4rAAAAABcgjLMXMElT9M-yuBhgQpqGuenq"),
+  provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_KEY!),
   isTokenAutoRefreshEnabled: true,
 });
 

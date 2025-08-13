@@ -38,24 +38,27 @@ const RegistrantDetail = ({
   if (!registrant || !registrationHistory) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
             {registrant.name} 的報名記錄
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-left">
             查看此報名者的詳細資料和活動參與歷史
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <main
+          className="flex-1 space-y-6 p-6 overflow-y-auto"
+          style={{ paddingBottom: "max(3rem, env(safe-area-inset-bottom))" }}
+        >
           {/* 基本資料 */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">基本資料</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">姓名：</span>
@@ -81,7 +84,9 @@ const RegistrantDetail = ({
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">住戶身份：</span>
+                <span className="text-sm text-muted-foreground">
+                  住戶身份：
+                </span>
                 <Badge variant={"default"}>
                   {ResidentStatusDisplayEnum[registrant.residient_type]}
                 </Badge>
@@ -101,7 +106,9 @@ const RegistrantDetail = ({
             </CardHeader>
             <CardContent className="space-y-4">
               {registrationHistory.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">尚無報名記錄</p>
+                <p className="text-muted-foreground text-center py-4">
+                  尚無報名記錄
+                </p>
               ) : (
                 registrationHistory.map((history) => (
                   <Card
@@ -110,11 +117,11 @@ const RegistrantDetail = ({
                   >
                     <CardContent className="pt-4">
                       <div className="space-y-3">
-                        <div className="flex items-start justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                           <h4 className="font-medium">
                             {history.activity_name}
                           </h4>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1 sm:mt-0">
                             <Calendar className="w-4 h-4" />
                             {history.submit_time
                               .toDate()
@@ -125,19 +132,25 @@ const RegistrantDetail = ({
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           {history.age && (
                             <div>
-                              <span className="text-muted-foreground">年齡：</span>
+                              <span className="text-muted-foreground">
+                                年齡：
+                              </span>
                               <span>{history.age}</span>
                             </div>
                           )}
                           {history.children_count && (
                             <div>
-                              <span className="text-muted-foreground">兒童人數：</span>
+                              <span className="text-muted-foreground">
+                                兒童人數：
+                              </span>
                               <span>{history.children_count}</span>
                             </div>
                           )}
                           {history.info_source && (
                             <div className="col-span-2">
-                              <span className="text-muted-foreground">資訊來源：</span>
+                              <span className="text-muted-foreground">
+                                資訊來源：
+                              </span>
                               <span>{history.info_source}</span>
                             </div>
                           )}
@@ -165,7 +178,7 @@ const RegistrantDetail = ({
               )}
             </CardContent>
           </Card>
-        </div>
+        </main>
       </DialogContent>
     </Dialog>
   );
