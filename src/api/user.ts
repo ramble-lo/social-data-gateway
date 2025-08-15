@@ -44,7 +44,6 @@ export async function addUserWithUniqueMail(
     // }
 
     const userInfo: UserInfo = {
-      id: "",
       name: displayName || "",
       email: email,
       role: "guest",

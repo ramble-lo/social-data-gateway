@@ -53,6 +53,10 @@ const UserInfo: React.FC = () => {
               <span className="font-medium">StoreID:</span> {userInfo?.id}
             </p>
             <p>
+              <span className="font-medium">組別編號</span>{" "}
+              {userInfo?.community_code}
+            </p>
+            <p>
               <span className="font-medium">Email 是否已驗證:</span>{" "}
               {currentUser.emailVerified ? "是" : "否"}
             </p>
