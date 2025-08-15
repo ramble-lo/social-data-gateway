@@ -32,18 +32,19 @@ export async function addUserWithUniqueMail(
     }
 
     // 2. 查詢現有文件：檢查是否已存在相同的組別編號
-    const communityCodeQuery = query(
-      usersCollectionRef,
-      where("community_code", "==", communityCode)
-    );
-    const communityCodeQuerySnapshot = await getDocs(communityCodeQuery);
+    // const communityCodeQuery = query(
+    //   usersCollectionRef,
+    //   where("community_code", "==", communityCode)
+    // );
+    // const communityCodeQuerySnapshot = await getDocs(communityCodeQuery);
 
-    if (!communityCodeQuerySnapshot.empty) {
-      console.warn(`組別編號 ${communityCode} 已存在，無法新增使用者。`);
-      return false;
-    }
+    // if (!communityCodeQuerySnapshot.empty) {
+    //   console.warn(`組別編號 ${communityCode} 已存在，無法新增使用者。`);
+    //   return false;
+    // }
 
     const userInfo: UserInfo = {
+      id: "",
       name: displayName || "",
       email: email,
       role: "guest",
@@ -76,7 +77,10 @@ const getUserInfo = async (email: string) => {
   const userCollection = collection(db, "users");
   const usersQuery = query(userCollection, where("email", "==", email));
   const userSnapshot = await getDocs(usersQuery);
-  const userInfo = userSnapshot.docs[0].data() as UserInfo;
+  const userInfo = {
+    id: userSnapshot.docs[0].id,
+    ...userSnapshot.docs[0].data(),
+  } as UserInfo;
   return userInfo;
 };
 
