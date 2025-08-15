@@ -38,6 +38,18 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = () => {
       icon: FileSpreadsheet,
     },
     {
+      title: "三合一表單",
+      description: "新增刪除修改社區行動",
+      url: "https://forms.gle/nUc8FVuh4FtqajLm9",
+      icon: FileSpreadsheet,
+    },
+    {
+      title: "三合一表單明細",
+      description: "新增刪除修改後的結果明細",
+      url: "https://docs.google.com/spreadsheets/d/1Dmzf9hA5y8RKHGFoUWi3Wzbdc5IGlrTTmOvi1r9J4YU/edit?resourcekey=&gid=125648843#gid=125648843",
+      icon: FileSpreadsheet,
+    },
+    {
       title: "每月活動總表",
       description: "管理所有活動資訊",
       url: "https://docs.google.com/spreadsheets/d/1pUWFjSF0PONrs-THNAPP9VpeA0BffZOfJSFevd_QdD8",

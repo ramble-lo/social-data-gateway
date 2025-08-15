@@ -59,13 +59,13 @@ const HomePage = () => {
       id: "data",
       label: "報名資料",
       icon: Users,
-      show: !isGuest,
+      show: true,
     },
     {
       id: "registrants",
       label: "報名者清單",
       icon: UserCheck,
-      show: !isGuest,
+      show: true,
     },
   ].filter((item) => item.show);
 

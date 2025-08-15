@@ -2,9 +2,11 @@ import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useUserInfo from "@/hooks/useUserInfo";
 
 const UserInfo: React.FC = () => {
   const { currentUser } = useAuth();
+  const { userInfo } = useUserInfo();
 
   if (!currentUser) {
     return <div>請先登入</div>;
@@ -32,7 +34,9 @@ const UserInfo: React.FC = () => {
               src={currentUser.photoURL || undefined}
               alt={currentUser.displayName || "User"}
             />
-            <AvatarFallback>{getInitials(currentUser.displayName)}</AvatarFallback>
+            <AvatarFallback>
+              {getInitials(currentUser.displayName)}
+            </AvatarFallback>
           </Avatar>
           <div>
             <p className="text-xl font-semibold">{currentUser.displayName}</p>
@@ -43,7 +47,10 @@ const UserInfo: React.FC = () => {
           <h3 className="font-semibold">詳細資訊</h3>
           <div className="mt-2 space-y-2 text-sm">
             <p>
-              <span className="font-medium">使用者 ID:</span> {currentUser.uid}
+              <span className="font-medium">AuthID:</span> {currentUser.uid}
+            </p>
+            <p>
+              <span className="font-medium">StoreID:</span> {userInfo?.id}
             </p>
             <p>
               <span className="font-medium">Email 是否已驗證:</span>{" "}
