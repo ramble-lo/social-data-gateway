@@ -41,20 +41,20 @@ export interface RegistrationFromFirebase extends Registration {
 }
 
 export enum ResidentStatusEnum {
-  xinglong = "是，我是興隆社宅2區的住戶",
+  xinglongd2 = "是",
   wenshan = "否，我是文山區鄰近居民",
   otherTaipeiSocialHousing = "否，我是其他臺北市社會住宅的住戶",
   other = "以上皆非",
 }
 export enum ResidentStatusDisplayEnum {
-  xinglong = "興隆D2",
+  xinglongd2 = "興隆D2",
   wenshan = "文山居民",
   otherTaipeiSocialHousing = "其他社宅",
   other = "一般市民",
 }
 
 export type ResidentStatusType =
-  | "xinglong"
+  | "xinglongd2"
   | "wenshan"
   | "otherTaipeiSocialHousing"
   | "other";
