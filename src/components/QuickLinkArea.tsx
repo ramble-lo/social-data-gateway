@@ -34,7 +34,7 @@ const QuickLinkArea: React.FC<QuickLinkAreaProps> = () => {
     {
       title: "B表明細",
       description: "B表活動辦理明細",
-      url: "https://docs.google.com/spreadsheets/d/1Dmzf9hA5y8RKHGFoUWi3Wzbdc5IGlrTTmOvi1r9J4YU",
+      url: "https://docs.google.com/spreadsheets/d/1pEnZioNUFfcJCaoQibU717vmgF9j1x57ikJP-LLzbSY/edit?usp=sharing",
       icon: FileSpreadsheet,
     },
     {
