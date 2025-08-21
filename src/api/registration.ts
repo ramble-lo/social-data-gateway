@@ -89,25 +89,88 @@ const useGetRegistrantionHistory = (
   });
 };
 
-const getRegistrantsFromFirebase = async () => {
+const getRegistrantsFromFirebase = async (
+  page: number = 1,
+  pageSize: number = 10,
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null,
+  searchTerm?: string
+) => {
+  console.log("getRegistrantsFromFirebase");
+
   const registrantsCollection = collection(db, "registrants");
-  //   const registrantsQuery = query(
-  //     registrantsCollection,
-  //     where("phone", "==", "0988992069")
-  //   );
-  const registrantsSnapshot = await getDocs(registrantsCollection);
+  
+  let q;
+  if (searchTerm) {
+    // For search, use where query with range queries for partial name matching
+    const searchEnd = searchTerm + '\uf8ff';
+    q = query(
+      registrantsCollection,
+      where("name", ">=", searchTerm),
+      where("name", "<=", searchEnd),
+      orderBy("name"),
+      limit(pageSize)
+    );
+    
+    if (lastVisible) {
+      q = query(
+        registrantsCollection,
+        where("name", ">=", searchTerm),
+        where("name", "<=", searchEnd),
+        orderBy("name"),
+        startAfter(lastVisible),
+        limit(pageSize)
+      );
+    }
+  } else {
+    // Regular pagination without search
+    q = query(
+      registrantsCollection,
+      orderBy("updated_at", "desc"),
+      limit(pageSize)
+    );
+
+    if (lastVisible) {
+      q = query(
+        registrantsCollection,
+        orderBy("updated_at", "desc"),
+        startAfter(lastVisible),
+        limit(pageSize)
+      );
+    }
+  }
+
+  const registrantsSnapshot = await getDocs(q);
   const registrantsData = registrantsSnapshot.docs.map(
     (doc) => ({ id: doc.id, ...doc.data() } as RegistrantFromFirebase)
   );
-  return registrantsData;
+
+  const newLastVisible =
+    registrantsSnapshot.docs.length > 0
+      ? registrantsSnapshot.docs[registrantsSnapshot.docs.length - 1]
+      : null;
+
+  return { data: registrantsData, lastVisible: newLastVisible };
 };
 
 const useGetRegistrants = (
-  options?: Partial<UseQueryOptions<RegistrantFromFirebase[], Error>>
+  page: number = 1,
+  pageSize: number = 10,
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null,
+  searchTerm?: string,
+  options?: Partial<
+    UseQueryOptions<
+      {
+        data: RegistrantFromFirebase[];
+        lastVisible: QueryDocumentSnapshot<DocumentData> | null;
+      },
+      Error
+    >
+  >
 ) => {
   return useQuery({
-    queryKey: ["registrants"],
-    queryFn: getRegistrantsFromFirebase,
+    queryKey: ["registrants", page, pageSize, lastVisible?.id, searchTerm],
+    queryFn: () => getRegistrantsFromFirebase(page, pageSize, lastVisible, searchTerm),
+    refetchOnWindowFocus: false,
     ...options,
   });
 };
@@ -204,4 +267,5 @@ export {
   useGetRegistrationHistoryCount,
   getRegistrantsCount,
   useGetRegistrantsCount,
+  addRegistrantToFirebase,
 };

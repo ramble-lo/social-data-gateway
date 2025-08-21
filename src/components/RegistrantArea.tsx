@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -18,12 +19,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { UserCheck, Eye } from "lucide-react";
+import { UserCheck, Eye, Search } from "lucide-react";
 import { useRegistrants } from "@/hooks/useRegistrants";
 import RegistrantDetail from "@/components/RegistrantDetail";
 import { ResidentStatusDisplayEnum } from "@/types/registrant";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { useGetRegistrationHistoryCount } from "@/api/registration";
+import {
+  QueryDocumentSnapshot,
+  DocumentData,
+  Timestamp,
+} from "firebase/firestore";
+
+const formatTimestampToMonth = (timestamp: Timestamp): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "2-digit",
+  };
+  const formattedDate: string = timestamp
+    .toDate()
+    .toLocaleDateString("zh-TW", options);
+
+  return formattedDate;
+};
 
 interface RegistrantAreaProps {
   value: string;
@@ -34,25 +51,74 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
   const isFocus = true;
   const [selectedRegistrant, setSelectedRegistrant] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const { registrants, loading } = useRegistrants({ isFocus });
-  const { data: totalCount } = useGetRegistrationHistoryCount({
-    enabled: isFocus,
-  });
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  if (loading) return null;
+  // Stack to keep track of lastVisible for each page
+  const lastVisibleStack = useRef<
+    (QueryDocumentSnapshot<DocumentData> | null)[]
+  >([null]);
+
+  // Get the lastVisible for the current page (null for first page)
+  const lastVisible = lastVisibleStack.current[currentPage - 1] || null;
+
+  // Debounce search input
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchInput !== searchTerm) {
+        setSearchTerm(searchInput);
+        setCurrentPage(1);
+        lastVisibleStack.current = [null];
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchInput, searchTerm]);
+
+  const {
+    registrants,
+    loading,
+    lastVisible: newLastVisible,
+    totalCount,
+  } = useRegistrants({
+    isFocus,
+    page: currentPage,
+    pageSize: itemsPerPage,
+    lastVisible,
+    searchTerm,
+  });
 
   const handleViewRegistrant = (registrant) => {
     setSelectedRegistrant(registrant);
     setDetailDialogOpen(true);
   };
 
-  const paginatedRegistrants =
-    registrants?.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    ) || [];
+  // When page changes, update the lastVisibleStack
+  const handlePageChange = async (page: number) => {
+    if (page === currentPage) return;
+    if (page > lastVisibleStack.current.length) {
+      // Need to walk forward to get the cursor for the target page
+      const lastCursor =
+        lastVisibleStack.current[lastVisibleStack.current.length - 1];
+      let nextCursor = lastCursor;
+      for (let p = lastVisibleStack.current.length; p < page; p++) {
+        // Fetch the next page cursor
+        const res = await import("@/api/registration").then((m) =>
+          m.getRegistrantsFromFirebase(p, itemsPerPage, nextCursor, searchTerm)
+        );
+        nextCursor = res.lastVisible;
+        lastVisibleStack.current.push(nextCursor);
+      }
+    }
+    setCurrentPage(page);
+  };
+
+  // Handle search input change (immediate UI update)
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+  };
 
   return (
     <>
@@ -66,7 +132,10 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary">
-                  總計 {registrants?.length} 位報名者
+                  {searchTerm
+                    ? `搜尋結果 ${totalCount || 0}`
+                    : `總計 ${totalCount || 0}`}{" "}
+                  位報名者
                 </Badge>
               </div>
             </CardTitle>
@@ -75,9 +144,26 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="text-center py-8">載入中...</div>
-            ) : (
+            <div className="flex items-center gap-2 mb-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  placeholder="搜尋報名者姓名..."
+                  value={searchInput}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            <div className="relative">
+              {loading && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-md">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="text-sm text-gray-600">載入中...</span>
+                  </div>
+                </div>
+              )}
               <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -90,7 +176,9 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedRegistrants.map((registrant) => {
+                    {registrants.map((registrant) => {
+                      console.log("registrant", registrant);
+
                       return (
                         <TableRow key={registrant.id}>
                           <TableCell className="font-medium">
@@ -116,9 +204,7 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {registrant.updated_at
-                              .toDate()
-                              .toLocaleDateString("zh-TW")}
+                            {formatTimestampToMonth(registrant.updated_at)}
                           </TableCell>
                           <TableCell>
                             <Button
@@ -126,6 +212,7 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
                               size="sm"
                               onClick={() => handleViewRegistrant(registrant)}
                               className="flex items-center gap-1"
+                              disabled={loading}
                             >
                               <Eye className="w-4 h-4" />
                               查看
@@ -137,14 +224,14 @@ const RegistrantArea: React.FC<RegistrantAreaProps> = () => {
                   </TableBody>
                 </Table>
               </div>
-            )}
+            </div>
           </CardContent>
           <CardFooter>
             <DataTablePagination
-              totalCount={totalCount}
-              itemsPerPage={itemsPerPage}
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
+              totalCount={totalCount || 0}
+              itemsPerPage={itemsPerPage}
             />
           </CardFooter>
         </Card>

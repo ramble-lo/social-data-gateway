@@ -1,20 +1,30 @@
-import { useToast } from "@/components/ui/use-toast";
-import { useGetRegistrants } from "@/api/registration";
+import { useGetRegistrants, useGetRegistrantsCount } from "@/api/registration";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 
 interface UseRegistrantsProps {
   isFocus?: boolean;
+  page?: number;
+  pageSize?: number;
+  lastVisible?: QueryDocumentSnapshot<DocumentData> | null;
+  searchTerm?: string;
 }
 
 export const useRegistrants = ({
   isFocus = true,
+  page = 1,
+  pageSize = 10,
+  lastVisible = null,
+  searchTerm = "",
 }: UseRegistrantsProps = {}) => {
-  const { toast } = useToast();
-
-  const { data: registrants, isLoading: isGetRegistrantsLoading } =
-    useGetRegistrants({ enabled: isFocus });
+  const { data: result, isLoading: isGetRegistrantsLoading } =
+    useGetRegistrants(page, pageSize, lastVisible, searchTerm, { enabled: isFocus });
+  
+  const { data: totalCount } = useGetRegistrantsCount({ enabled: isFocus && !searchTerm });
 
   return {
-    registrants,
+    registrants: result?.data || [],
+    lastVisible: result?.lastVisible || null,
     loading: isGetRegistrantsLoading,
+    totalCount: searchTerm ? result?.data?.length : totalCount,
   };
 };
