@@ -76,7 +76,10 @@ const getUserInfo = async (email: string) => {
   const userCollection = collection(db, "users");
   const usersQuery = query(userCollection, where("email", "==", email));
   const userSnapshot = await getDocs(usersQuery);
-  const userInfo = userSnapshot.docs[0].data() as UserInfo;
+  const userInfo = {
+    id: userSnapshot.docs[0].id,
+    ...userSnapshot.docs[0].data(),
+  } as UserInfo;
   return userInfo;
 };
 
