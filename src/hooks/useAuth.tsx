@@ -60,11 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ) {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("community_code", "==", communityCode));
-    // const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-    // if (!querySnapshot.empty) {
-    //   throw new Error("該組別編號已被註冊");
-    // }
+    if (!querySnapshot.empty) {
+      throw new Error("該組別編號已被註冊");
+    }
 
     const userCredential = await createUserWithEmailAndPassword(
       auth,
