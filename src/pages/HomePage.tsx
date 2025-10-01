@@ -17,6 +17,7 @@ import {
   Menu,
   Home,
   Settings,
+  Monitor,
 } from "lucide-react";
 import RegistrantionHistoryArea from "@/components/RegistrantionHistoryArea";
 import UploadArea from "@/components/UploadArea";
@@ -24,6 +25,7 @@ import RegistrantArea from "@/components/RegistrantArea";
 import QuickLinkArea from "@/components/QuickLinkArea";
 import StatusArea from "@/components/StatusArea";
 import UserProfile from "@/components/UserProfile";
+import TVWallArea from "@/components/TVWallArea";
 import { useAuth } from "@/hooks/useAuth";
 import useUserInfo from "@/hooks/useUserInfo";
 
@@ -67,6 +69,12 @@ const HomePage = () => {
       icon: UserCheck,
       show: true,
     },
+    {
+      id: "tvwall",
+      label: "電視牆製作",
+      icon: Monitor,
+      show: isAdmin,
+    },
   ].filter((item) => item.show);
 
   const renderMainContent = () => {
@@ -81,6 +89,8 @@ const HomePage = () => {
         return <RegistrantionHistoryArea value="data" activeTab={activeView} />;
       case "registrants":
         return <RegistrantArea value="registrants" activeTab={activeView} />;
+      case "tvwall":
+        return <TVWallArea value="tvwall" activeTab={activeView} />;
       default:
         return <QuickLinkArea value="links" activeTab={activeView} />;
     }
