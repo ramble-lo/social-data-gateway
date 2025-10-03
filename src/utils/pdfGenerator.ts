@@ -1,7 +1,8 @@
 // PDF 和圖片生成相關的 utility 函數
 import React from "react";
 import { pdf } from "@react-pdf/renderer";
-import { TVWallDocument, type TVWallData } from "./TVWallPdfDocument";
+import { TVWallDocument } from "./TVWallPdfDocument";
+import { TVWallSettings } from "@/components/TVWallPreview";
 
 export interface PDFOptions {
   format?: "A4" | "A3" | "letter";
@@ -9,8 +10,6 @@ export interface PDFOptions {
   quality?: number;
   scale?: number;
 }
-
-export type { TVWallData };
 
 export interface ImageOptions {
   format?: "png" | "jpeg" | "webp";
@@ -61,12 +60,12 @@ export const htmlToImage = async (
  * 使用 @react-pdf/renderer 生成電視牆 PDF
  */
 export const generateTVWallPdf = async (
-  data: TVWallData,
+  settings: TVWallSettings,
   filename: string = "tvwall.pdf"
 ): Promise<void> => {
   try {
     const doc = React.createElement(TVWallDocument, {
-      data,
+      settings,
     }) as React.ReactElement;
     const blob = await pdf(doc).toBlob();
 
@@ -89,59 +88,10 @@ export const generateTVWallPdf = async (
  * 從電視牆設定生成 PDF
  */
 export const generateTVWallPdfFromSettings = async (
-  settings: {
-    title: string;
-    subtitle: string;
-    content: string;
-    backgroundColor: string;
-    textColor: string;
-    fontSize: string;
-    layout: string;
-    logoUrl?: string;
-  },
+  settings: TVWallSettings,
   filename: string = "tvwall.pdf"
 ): Promise<void> => {
-  const data: TVWallData = {
-    title: settings.title,
-    subtitle: settings.subtitle,
-    content: settings.content,
-    backgroundColor: settings.backgroundColor,
-    textColor: settings.textColor,
-    fontSize: settings.fontSize,
-    layout: settings.layout,
-    logoUrl: settings.logoUrl,
-  };
-
-  await generateTVWallPdf(data, filename);
-};
-
-/**
- * 將 HTML 元素轉換為 PDF (保持向下相容)
- * 現在使用 @react-pdf/renderer 替代 jsPDF
- */
-export const htmlToPdf = async (
-  element: HTMLElement,
-  filename: string = "document.pdf",
-  options: PDFOptions = {}
-): Promise<void> => {
-  try {
-    // 從 HTML 元素提取數據
-    const data: TVWallData = {
-      title: element.querySelector("h1")?.textContent || "電視牆標題",
-      subtitle: element.querySelector("h2")?.textContent || "副標題",
-      content: element.querySelector("div:last-child")?.textContent || "內容",
-      backgroundColor: element.style.backgroundColor || "#1e40af",
-      textColor: element.style.color || "#ffffff",
-      fontSize: "large",
-      layout: "center",
-      logoUrl: element.querySelector("img")?.src,
-    };
-
-    await generateTVWallPdf(data, filename);
-  } catch (error) {
-    console.error("Failed to generate PDF:", error);
-    throw new Error("PDF 生成失敗");
-  }
+  await generateTVWallPdf(settings, filename);
 };
 
 /**

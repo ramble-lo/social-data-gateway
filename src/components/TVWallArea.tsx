@@ -36,21 +36,12 @@ import {
   downloadImage,
   generateFilename,
 } from "@/utils/pdfGenerator";
+import { TVWallDocument } from "@/utils/TVWallPdfDocument";
+import TVWallPreview, { TVWallSettings } from "@/components/TVWallPreview";
 
 interface TVWallAreaProps {
   value: string;
   activeTab: string;
-}
-
-interface TVWallSettings {
-  title: string;
-  subtitle: string;
-  backgroundColor: string;
-  textColor: string;
-  fontSize: string;
-  layout: string;
-  logoUrl: string;
-  content: string;
 }
 
 const TVWallArea: React.FC<TVWallAreaProps> = () => {
@@ -58,10 +49,17 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [settings, setSettings] = useState<TVWallSettings>({
-    title: "興隆社宅2區 社區活動",
-    subtitle: "歡迎參與社區活動",
-    backgroundColor: "#1e40af",
-    textColor: "#ffffff",
+    title: "興隆亂打秀樂團",
+    subtitle: "",
+    location: "多功能會議室",
+    date: "2025/10/12（日）10:00-12:00",
+    photoUrl:
+      // "https://drive.google.com/uc?id=1E35menliRy-1Cp9eaH2bxP3zkynqxV3b",
+      "https://lh3.googleusercontent.com/d/1E35menliRy-1Cp9eaH2bxP3zkynqxV3b",
+    registrationQRCode:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/480px-QR_Code_Example.svg.png",
+    backgroundColor: "#E7E8E8",
+    textColor: "#444444",
     fontSize: "large",
     layout: "center",
     logoUrl: "",
@@ -76,6 +74,50 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
       ...prev,
       [key]: value,
     }));
+  };
+
+  const handleQRCodeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // 檢查檔案類型
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "檔案格式錯誤",
+        description: "請選擇圖片檔案 (PNG、JPG、JPEG)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 檢查檔案大小 (限制 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "檔案過大",
+        description: "檔案大小不能超過 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 讀取檔案並轉換為 base64
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      handleSettingChange("registrationQRCode", result);
+      toast({
+        title: "QR Code 上傳成功",
+        description: "您的 QR Code 已成功上傳並將顯示在電視牆上",
+      });
+    };
+    reader.onerror = () => {
+      toast({
+        title: "上傳失敗",
+        description: "讀取檔案時發生錯誤，請重試",
+        variant: "destructive",
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const generatePreview = () => {
@@ -160,34 +202,6 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
         description: "未找到已保存的電視牆模板",
         variant: "destructive",
       });
-    }
-  };
-
-  const getFontSizeClass = (size: string) => {
-    switch (size) {
-      case "small":
-        return "text-2xl";
-      case "medium":
-        return "text-4xl";
-      case "large":
-        return "text-6xl";
-      case "xlarge":
-        return "text-8xl";
-      default:
-        return "text-4xl";
-    }
-  };
-
-  const getLayoutClass = (layout: string) => {
-    switch (layout) {
-      case "left":
-        return "text-left items-start";
-      case "center":
-        return "text-center items-center";
-      case "right":
-        return "text-right items-end";
-      default:
-        return "text-center items-center";
     }
   };
 
@@ -318,7 +332,6 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               <div>
                 <Label htmlFor="logoUrl">Logo 圖片網址 (選填)</Label>
                 <Input
@@ -330,6 +343,55 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
                   placeholder="https://example.com/logo.png"
                 />
               </div>
+            </div>
+
+            {/* QR Code 上傳區域 */}
+            <div className="space-y-4 pt-4 border-t">
+              <h4 className="font-medium flex items-center space-x-2">
+                <ImageIcon className="h-4 w-4" />
+                <span>QR Code 設定</span>
+              </h4>
+
+              <div>
+                <Label htmlFor="qrCodeUpload">上傳 QR Code 圖片</Label>
+                <Input
+                  id="qrCodeUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleQRCodeUpload}
+                  className="mt-1"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  支援 PNG、JPG、JPEG 格式
+                </p>
+              </div>
+
+              {settings.registrationQRCode && (
+                <div className="flex items-center space-x-2">
+                  <div className="w-16 h-16 border rounded overflow-hidden">
+                    <img
+                      src={settings.registrationQRCode}
+                      alt="QR Code 預覽"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground">
+                      QR Code 已上傳
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        handleSettingChange("registrationQRCode", "")
+                      }
+                      className="mt-1"
+                    >
+                      移除 QR Code
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 操作按鈕 */}
@@ -389,66 +451,7 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
             <CardDescription>預覽您的電視牆顯示效果</CardDescription>
           </CardHeader>
           <CardContent>
-            <div
-              ref={previewRef}
-              className={`
-                w-full aspect-video rounded-lg border-2 border-dashed border-gray-300
-                flex flex-col justify-center p-8 relative overflow-hidden
-                ${getLayoutClass(settings.layout)}
-              `}
-              style={{
-                backgroundColor: settings.backgroundColor,
-                color: settings.textColor,
-              }}
-            >
-              {/* Logo */}
-              {settings.logoUrl && (
-                <div className="absolute top-4 left-4">
-                  <img
-                    src={settings.logoUrl}
-                    alt="Logo"
-                    className="h-16 w-auto object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* 主要內容 */}
-              <div className="space-y-4">
-                {settings.title && (
-                  <h1
-                    className={`font-bold ${getFontSizeClass(
-                      settings.fontSize
-                    )}`}
-                  >
-                    {settings.title}
-                  </h1>
-                )}
-
-                {settings.subtitle && (
-                  <h2
-                    className={`font-medium ${getFontSizeClass(
-                      "medium"
-                    )} opacity-90`}
-                  >
-                    {settings.subtitle}
-                  </h2>
-                )}
-
-                {settings.content && (
-                  <div className="mt-8 text-xl leading-relaxed whitespace-pre-line">
-                    {settings.content}
-                  </div>
-                )}
-              </div>
-
-              {/* 時間戳記 */}
-              <div className="absolute bottom-4 right-4 text-sm opacity-75">
-                {new Date().toLocaleString("zh-TW")}
-              </div>
-            </div>
+            <TVWallPreview ref={previewRef} settings={settings} />
 
             <div className="mt-4 text-sm text-muted-foreground">
               <p>• 建議解析度：1920x1080 (16:9)</p>

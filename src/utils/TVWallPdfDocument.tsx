@@ -8,17 +8,7 @@ import {
   Image,
   Font,
 } from "@react-pdf/renderer";
-
-export interface TVWallData {
-  title: string;
-  subtitle: string;
-  content: string;
-  backgroundColor: string;
-  textColor: string;
-  fontSize: string;
-  layout: string;
-  logoUrl?: string;
-}
+import { TVWallSettings } from "@/components/TVWallPreview";
 
 // 註冊完整的 Noto Sans TC 字體系列
 Font.register({
@@ -114,22 +104,24 @@ const pdfStyles = StyleSheet.create({
 });
 
 // TV Wall PDF Document 組件
-export const TVWallDocument: React.FC<{ data: TVWallData }> = ({ data }) => {
+export const TVWallDocument: React.FC<{ settings: TVWallSettings }> = ({
+  settings,
+}) => {
   const alignmentStyle =
-    data.layout === "left"
+    settings.layout === "left"
       ? pdfStyles.leftAlign
-      : data.layout === "right"
+      : settings.layout === "right"
       ? pdfStyles.rightAlign
       : pdfStyles.centerAlign;
 
   const titleFontSize =
-    data.fontSize === "small"
+    settings.fontSize === "small"
       ? 24
-      : data.fontSize === "medium"
+      : settings.fontSize === "medium"
       ? 32
-      : data.fontSize === "large"
+      : settings.fontSize === "large"
       ? 40
-      : data.fontSize === "xlarge"
+      : settings.fontSize === "xlarge"
       ? 48
       : 32;
 
@@ -141,62 +133,64 @@ export const TVWallDocument: React.FC<{ data: TVWallData }> = ({ data }) => {
       <Page
         size="A4"
         orientation="landscape"
-        style={[pdfStyles.page, { backgroundColor: data.backgroundColor }]}
+        style={[pdfStyles.page, { backgroundColor: settings.backgroundColor }]}
       >
         <View style={[pdfStyles.container, alignmentStyle]}>
           {/* Logo */}
-          {data.logoUrl && <Image src={data.logoUrl} style={pdfStyles.logo} />}
+          {settings.logoUrl && (
+            <Image src={settings.logoUrl} style={pdfStyles.logo} />
+          )}
 
           {/* Title */}
-          {data.title && (
+          {settings.title && (
             <Text
               style={[
                 pdfStyles.title,
                 {
-                  color: data.textColor,
+                  color: settings.textColor,
                   fontSize: titleFontSize,
-                  textAlign: data.layout as "left" | "center" | "right",
+                  textAlign: settings.layout as "left" | "center" | "right",
                 },
               ]}
             >
-              {data.title}
+              {settings.title}
             </Text>
           )}
 
           {/* Subtitle */}
-          {data.subtitle && (
+          {settings.subtitle && (
             <Text
               style={[
                 pdfStyles.subtitle,
                 {
-                  color: data.textColor,
+                  color: settings.textColor,
                   fontSize: subtitleFontSize,
-                  textAlign: data.layout as "left" | "center" | "right",
+                  textAlign: settings.layout as "left" | "center" | "right",
                 },
               ]}
             >
-              {data.subtitle}
+              {settings.subtitle}
             </Text>
           )}
 
           {/* Content */}
-          {data.content && (
+          {settings.content && (
             <Text
               style={[
                 pdfStyles.content,
                 {
-                  color: data.textColor,
+                  color: settings.textColor,
                   fontSize: contentFontSize,
-                  textAlign: data.layout as "left" | "center" | "right",
+                  textAlign: settings.layout as "left" | "center" | "right",
                 },
               ]}
             >
-              {data.content}
+              {settings.content}
             </Text>
           )}
 
           {/* Timestamp */}
-          <Text style={[pdfStyles.timestamp, { color: data.textColor }]}>
+          <Text style={[pdfStyles.timestamp, { color: settings.textColor }]}>
             {new Date().toLocaleString("zh-TW")}
           </Text>
         </View>
