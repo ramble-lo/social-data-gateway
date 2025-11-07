@@ -19,6 +19,7 @@ interface TOTPAreaProps {
 const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
   // 從環境變數讀取TOTP Secret Key
   const TOTP_SECRET_KEY = import.meta.env.VITE_TOTP_SECRET_KEY || "";
+  console.log("TOTP Secret Key length:", TOTP_SECRET_KEY.length);
 
   const [totpCode, setTotpCode] = useState("");
   const [timeRemaining, setTimeRemaining] = useState(30);
