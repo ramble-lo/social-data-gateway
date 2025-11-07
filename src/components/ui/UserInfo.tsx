@@ -22,6 +22,14 @@ const UserInfo: React.FC = () => {
       .slice(0, 2);
   };
 
+  const teamText = {
+    admin: "系統管理組",
+    platform: "平台組",
+    finance: "營運組",
+    venue: "場地組",
+    supplies: "資材組",
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -58,6 +66,10 @@ const UserInfo: React.FC = () => {
             </p>
             <p>
               <span className="font-medium">帳號身份:</span> {userInfo?.role}
+            </p>
+            <p>
+              <span className="font-medium">事務分組:</span>{" "}
+              {userInfo?.team ? teamText[userInfo?.team] : "未知"}
             </p>
             <p>
               <span className="font-medium">Email 是否已驗證:</span>{" "}

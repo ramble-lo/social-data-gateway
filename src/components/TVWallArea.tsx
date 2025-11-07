@@ -49,7 +49,7 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [settings, setSettings] = useState<TVWallSettings>({
-    title: "興隆亂打秀樂團",
+    title: "興隆亂打秀樂團興隆亂打秀樂團",
     subtitle: "",
     location: "多功能會議室",
     date: "2025/10/12（日）10:00-12:00",
@@ -422,19 +422,6 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
               </div>
               <div className="flex space-x-2">
                 <Button
-                  onClick={downloadAsImage}
-                  disabled={isGenerating}
-                  size="sm"
-                  variant="outline"
-                >
-                  {isGenerating ? (
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4 mr-2" />
-                  )}
-                  下載圖片
-                </Button>
-                <Button
                   onClick={downloadAsPdf}
                   disabled={isGenerating}
                   size="sm"
@@ -475,7 +462,6 @@ const TVWallArea: React.FC<TVWallAreaProps> = () => {
                 <li>• 在左側設定面板調整內容和樣式</li>
                 <li>• 右側預覽面板會即時顯示效果</li>
                 <li>• 點擊「更新預覽」重新整理顯示</li>
-                <li>• 點擊「下載圖片」生成電視牆圖片</li>
                 <li>• 點擊「下載 PDF」生成可列印的 PDF 文件</li>
               </ul>
             </div>

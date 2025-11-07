@@ -38,6 +38,8 @@ const formatTimestampToMonth = (timestamp: Timestamp): string => {
   const formattedDate: string = timestamp
     .toDate()
     .toLocaleDateString("zh-TW", options);
+  console.log("timestamp", timestamp);
+  console.log("formattedDate", formattedDate);
 
   return formattedDate;
 };

@@ -18,6 +18,7 @@ import {
   Home,
   Settings,
   Monitor,
+  Shield,
 } from "lucide-react";
 import RegistrantionHistoryArea from "@/components/RegistrantionHistoryArea";
 import UploadArea from "@/components/UploadArea";
@@ -26,6 +27,7 @@ import QuickLinkArea from "@/components/QuickLinkArea";
 import StatusArea from "@/components/StatusArea";
 import UserProfile from "@/components/UserProfile";
 import TVWallArea from "@/components/TVWallArea";
+import TOTPArea from "@/components/TOTPArea";
 import { useAuth } from "@/hooks/useAuth";
 import useUserInfo from "@/hooks/useUserInfo";
 
@@ -43,7 +45,7 @@ const HomePage = () => {
       id: "dashboard",
       label: "儀表板",
       icon: Home,
-      show: isAdmin,
+      show: true,
     },
     {
       id: "links",
@@ -75,6 +77,12 @@ const HomePage = () => {
       icon: Monitor,
       show: isAdmin,
     },
+    {
+      id: "totp",
+      label: "Google帳號驗證器",
+      icon: Shield,
+      show: userInfo?.team === "platform" || userInfo?.team === "admin",
+    },
   ].filter((item) => item.show);
 
   const renderMainContent = () => {
@@ -91,6 +99,8 @@ const HomePage = () => {
         return <RegistrantArea value="registrants" activeTab={activeView} />;
       case "tvwall":
         return <TVWallArea value="tvwall" activeTab={activeView} />;
+      case "totp":
+        return <TOTPArea value="totp" activeTab={activeView} />;
       default:
         return <QuickLinkArea value="links" activeTab={activeView} />;
     }

@@ -7,4 +7,5 @@ export interface UserInfo {
   community_code: string;
   created_at: Timestamp;
   role: "admin" | "general" | "guest";
+  team?: "admin" | "platform" | "finance" | "venue" | "supplies";
 }

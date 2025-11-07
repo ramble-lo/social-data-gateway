@@ -84,7 +84,7 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">系統狀態</CardTitle>
             <div className="h-4 w-4 bg-foreground rounded-full flex items-center justify-center">
@@ -95,12 +95,12 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
             <div className="text-2xl font-bold">正常運行</div>
             <p className="text-xs text-muted-foreground">所有服務正常運行中</p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Overview Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>系統概覽</CardTitle>
             <CardDescription>社區活動管理系統的基本資訊</CardDescription>
@@ -121,9 +121,9 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
               <span className="text-sm font-medium">v1.0.0</span>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>快速操作(beta)</CardTitle>
             <CardDescription>常用的管理功能</CardDescription>
@@ -139,7 +139,7 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
               <span className="text-sm font-medium">系統備份</span>
             </button>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
