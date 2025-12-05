@@ -8,4 +8,5 @@ export interface UserInfo {
   created_at: Timestamp;
   role: "admin" | "general" | "guest";
   team?: "admin" | "platform" | "finance" | "venue" | "supplies";
+  totp_secret: string;
 }

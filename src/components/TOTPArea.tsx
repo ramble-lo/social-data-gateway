@@ -8,8 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Copy, RefreshCw, Clock, AlertCircle } from "lucide-react";
+import { Copy, RefreshCw, Clock, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { TOTP } from "otpauth";
+import { db } from "@/integrations/firebase/client";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useAuth } from "@/hooks/useAuth";
+import useUserInfo from "@/hooks/useUserInfo";
 
 interface TOTPAreaProps {
   value: string;
@@ -17,16 +21,16 @@ interface TOTPAreaProps {
 }
 
 const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
-  // 從環境變數讀取TOTP Secret Key
-  const TOTP_SECRET_KEY = import.meta.env.VITE_TOTP_SECRET_KEY || "";
-  console.log("TOTP Secret Key length:", TOTP_SECRET_KEY.length);
+  const { currentUser } = useAuth();
+  const { userInfo } = useUserInfo();
+  const TOTP_SECRET_KEY = userInfo?.totp_secret || "";
 
   const [totpCode, setTotpCode] = useState("");
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [error, setError] = useState("");
   const [totp, setTotp] = useState<TOTP | null>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
 
-  // 創建TOTP實例
   const createTOTP = (secretKey: string) => {
     try {
       const totpInstance = new TOTP({
@@ -119,6 +123,27 @@ const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
     }
   };
 
+  const handleToggleReveal = async () => {
+    const newState = !isRevealed;
+    setIsRevealed(newState);
+
+    if (newState && currentUser) {
+      try {
+        await addDoc(collection(db, "totp_used_history"), {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName || "",
+          timestamp: serverTimestamp(),
+          action: "show_password",
+          userAgent: navigator.userAgent,
+          userId: userInfo.id,
+        });
+      } catch (err) {
+        console.error("Error logging TOTP access:", err);
+      }
+    }
+  };
+
   // 在組件載入時初始化TOTP
   useEffect(() => {
     initializeTOTP();
@@ -153,8 +178,8 @@ const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
               {/* TOTP 代碼顯示 */}
               <div className="flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-4xl font-mono font-bold tracking-wider text-primary bg-primary/10 px-6 py-4 rounded-lg border-2 border-primary/20">
-                    {totpCode}
+                  <div className="text-4xl font-mono font-bold tracking-wider text-primary bg-primary/10 px-6 py-4 rounded-lg border-2 border-primary/20 min-w-[200px]">
+                    {isRevealed ? totpCode : "******"}
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
@@ -168,8 +193,22 @@ const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={handleToggleReveal}
+                  className="flex items-center gap-2"
+                >
+                  {isRevealed ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  {isRevealed ? "隱藏密碼" : "顯示密碼"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => copyToClipboard(totpCode)}
                   className="flex items-center gap-2"
+                  disabled={!isRevealed}
                 >
                   <Copy className="h-4 w-4" />
                   複製代碼
@@ -212,15 +251,15 @@ const TOTPArea: React.FC<TOTPAreaProps> = ({ value, activeTab }) => {
           </div>
           <div className="flex gap-2">
             <span className="font-medium text-foreground">3.</span>
-            <span>點擊「複製代碼」可將當前驗證密碼複製到剪貼板使用</span>
+            <span>點擊「顯示密碼」可查看當前驗證碼，並記錄存取紀錄</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium text-foreground">4.</span>
-            <span>點擊「手動刷新」可立即產生新的驗證密碼</span>
+            <span>點擊「複製代碼」可將當前驗證密碼複製到剪貼板使用</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium text-foreground">5.</span>
-            <span>此驗證密碼可用於需要雙因子認證的各種服務登入</span>
+            <span>點擊「手動刷新」可立即產生新的驗證密碼</span>
           </div>
         </CardContent>
       </Card>
