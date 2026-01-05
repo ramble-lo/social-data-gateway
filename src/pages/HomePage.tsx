@@ -31,7 +31,7 @@ import UserProfile from "@/components/UserProfile";
 import TVWallArea from "@/components/TVWallArea";
 import TOTPArea from "@/components/TOTPArea";
 import MonthlyActivityArea from "@/components/MonthlyActivityArea";
-// import CloudDriveArea from "@/components/CloudDriveArea";
+import CloudDriveArea from "@/components/CloudDriveArea";
 import { useAuth } from "@/hooks/useAuth";
 import useUserInfo from "@/hooks/useUserInfo";
 
@@ -70,6 +70,12 @@ const HomePage = () => {
       show: true,
     },
     {
+      id: "drive",
+      label: "雲端資源",
+      icon: FolderOpen,
+      show: true,
+    },
+    {
       id: "data",
       label: "報名資料",
       icon: Users,
@@ -81,12 +87,6 @@ const HomePage = () => {
       icon: UserCheck,
       show: true,
     },
-    // {
-    //   id: "drive",
-    //   label: "雲端資源",
-    //   icon: FolderOpen,
-    //   show: true,
-    // },
     {
       id: "tvwall",
       label: "電視牆製作",
@@ -119,8 +119,8 @@ const HomePage = () => {
         return <TOTPArea value="totp" activeTab={activeView} />;
       case "monthly":
         return <MonthlyActivityArea value="monthly" activeTab={activeView} />;
-      // case "drive":
-      //   return <CloudDriveArea value="drive" activeTab={activeView} />;
+      case "drive":
+        return <CloudDriveArea value="drive" activeTab={activeView} />;
       default:
         return <QuickLinkArea value="links" activeTab={activeView} />;
     }
