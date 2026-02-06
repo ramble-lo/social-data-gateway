@@ -11,6 +11,11 @@ import {
   useGetRegistrantsCount,
 } from "@/api/registration";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { callGetFirestoreData } from "@/api/testFunction";
+import { useState } from "react";
+import useUserInfo from "@/hooks/useUserInfo";
 
 interface StatusAreaProps {
   value: string;
@@ -22,6 +27,32 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
     useGetRegistrationHistoryCount();
   const { data: registrantsCount, isLoading: isRegistrantsCountLoading } =
     useGetRegistrantsCount();
+  const { toast } = useToast();
+  const [isTestLoading, setIsTestLoading] = useState(false);
+  const { userInfo } = useUserInfo();
+  const isAdmin = userInfo?.role === "admin";
+
+  const handleTestApi = async () => {
+    setIsTestLoading(true);
+    try {
+      const data = await callGetFirestoreData();
+      console.log("API Result:", data);
+      toast({
+        title: "API Call Successful",
+        description:
+          data.message || "Successfully connected to getFirestoreData",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "API Call Failed",
+        description: "Check console for details",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestLoading(false);
+    }
+  };
 
   const isLoading = isRegistrationCountLoading || isRegistrantsCountLoading;
 
@@ -100,6 +131,23 @@ const StatusArea: React.FC<StatusAreaProps> = () => {
 
       {/* Overview Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {isAdmin ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>測試功能</CardTitle>
+              <CardDescription>測試後端 Cloud Functions 連線</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={handleTestApi}
+                disabled={isTestLoading}
+                className="w-full"
+              >
+                {isTestLoading ? "讀取中..." : "呼叫 getFirestoreData"}
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
         {/* <Card>
           <CardHeader>
             <CardTitle>系統概覽</CardTitle>
