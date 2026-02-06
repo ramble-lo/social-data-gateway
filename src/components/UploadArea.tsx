@@ -9,12 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Upload,
-  FileSpreadsheet,
-} from "lucide-react";
+import { Upload, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { processExcelFile } from "@/utils/excelProcessor";
+import { callUploadApplicationForm } from "@/api/uploadApplicationForm";
 
 interface UploadAreaProps {
   value: string;
@@ -54,7 +51,8 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
     });
 
     try {
-      const result = await processExcelFile(file);
+      // Call Cloud Function to process Excel file
+      const result = await callUploadApplicationForm(file);
 
       if (result.success) {
         toast({
@@ -68,7 +66,7 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
         // 重置檔案輸入
         setFile(null);
         const fileInput = document.getElementById(
-          "file-upload"
+          "file-upload",
         ) as HTMLInputElement;
         if (fileInput) fileInput.value = "";
       } else {
@@ -94,7 +92,9 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">資料上傳</h3>
-        <p className="text-sm text-muted-foreground mb-4">上傳 Excel 檔案來更新報名者資料</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          上傳 Excel 檔案來更新報名者資料
+        </p>
       </div>
 
       <Card>
@@ -104,7 +104,8 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
             Excel 報名表上傳
           </CardTitle>
           <CardDescription>
-            支援 Excel (.xlsx, .xls) 和 CSV 檔案格式。系統會自動處理重複報名者，以姓名和手機號碼作為唯一識別。
+            支援 Excel (.xlsx, .xls) 和 CSV
+            檔案格式。系統會自動處理重複報名者，以姓名和手機號碼作為唯一識別。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -114,7 +115,9 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="file-upload" className="cursor-pointer">
-                <span className="text-sm font-medium">點擊選擇檔案或拖拽至此</span>
+                <span className="text-sm font-medium">
+                  點擊選擇檔案或拖拽至此
+                </span>
               </Label>
               <Input
                 id="file-upload"
@@ -124,7 +127,9 @@ const UploadArea: React.FC<UploadAreaProps> = () => {
                 className="hidden"
                 disabled={uploading}
               />
-              <p className="text-xs text-muted-foreground">支援 .xlsx, .xls, .csv 格式</p>
+              <p className="text-xs text-muted-foreground">
+                支援 .xlsx, .xls, .csv 格式
+              </p>
             </div>
           </div>
 
