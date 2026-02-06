@@ -1,4 +1,8 @@
-import { getCloudFunctionUrl, fileToBase64 } from "./config";
+import {
+  authenticatedFetch,
+  getCloudFunctionUrl,
+  fileToBase64,
+} from "./config";
 
 export interface UploadApplicationFormResponse {
   success: boolean;
@@ -10,6 +14,7 @@ export interface UploadApplicationFormResponse {
 
 /**
  * Upload Excel file to Cloud Function for processing application form data
+ * Requires authentication
  * @param file - Excel file (.xlsx, .xls, .csv)
  * @returns Processing result with counts
  */
@@ -24,11 +29,8 @@ export const callUploadApplicationForm = async (
     // Convert file to Base64
     const fileBase64 = await fileToBase64(file);
 
-    const response = await fetch(url, {
+    const response = await authenticatedFetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         fileBase64,
         fileName: file.name,

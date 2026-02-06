@@ -1,8 +1,9 @@
-import { getCloudFunctionUrl } from "./config";
+import { authenticatedFetch, getCloudFunctionUrl } from "./config";
 
 /**
  * Test function to get Firestore data
  * Used for testing Cloud Function connectivity
+ * Requires authentication
  */
 export const callGetFirestoreData = async () => {
   const url = getCloudFunctionUrl("getFirestoreData");
@@ -10,11 +11,8 @@ export const callGetFirestoreData = async () => {
   console.log(`Calling Cloud Function at: ${url}`);
 
   try {
-    const response = await fetch(url, {
+    const response = await authenticatedFetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
 
     if (!response.ok) {

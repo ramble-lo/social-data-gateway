@@ -6,16 +6,16 @@ import {
   Timestamp,
   addDoc,
   collection,
-  doc,
   getDocs,
   query,
   where,
 } from "firebase/firestore";
+import { authenticatedFetch, getCloudFunctionUrl } from "./config";
 
 export async function addUserWithUniqueMail(
   user: User,
   communityCode: string,
-  displayName?: string
+  displayName?: string,
 ) {
   const { email } = user;
   try {
@@ -34,7 +34,7 @@ export async function addUserWithUniqueMail(
     // 2. 查詢現有文件：檢查是否已存在相同的組別編號
     const communityCodeQuery = query(
       usersCollectionRef,
-      where("community_code", "==", communityCode)
+      where("community_code", "==", communityCode),
     );
     const communityCodeQuerySnapshot = await getDocs(communityCodeQuery);
 
@@ -49,6 +49,7 @@ export async function addUserWithUniqueMail(
       role: "guest",
       community_code: communityCode,
       created_at: Timestamp.fromDate(new Date()),
+      totp_secret: "",
     };
     // 3. 條件式新增：如果信箱地址和組別編號都不存在，則新增文件
     const docRef = await addDoc(usersCollectionRef, userInfo);
@@ -72,20 +73,28 @@ export async function addUserWithUniqueMail(
 // });
 // };
 
-const getUserInfo = async (email: string) => {
-  const userCollection = collection(db, "users");
-  const usersQuery = query(userCollection, where("email", "==", email));
-  const userSnapshot = await getDocs(usersQuery);
-  const userInfo = {
-    id: userSnapshot.docs[0].id,
-    ...userSnapshot.docs[0].data(),
-  } as UserInfo;
-  return userInfo;
+const getUserInfo = async (email: string): Promise<UserInfo> => {
+  const url = getCloudFunctionUrl("getUserInfo");
+
+  const response = await authenticatedFetch(
+    `${url}?email=${encodeURIComponent(email)}`,
+    { method: "GET" },
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `HTTP error! status: ${response.status}`,
+    );
+  }
+
+  const result = await response.json();
+  return result.data as UserInfo;
 };
 
 export const useGetUserInfo = (
   email: string,
-  options?: UseQueryOptions<UserInfo, Error>
+  options?: UseQueryOptions<UserInfo, Error>,
 ) => {
   return useQuery({
     queryKey: ["user_info", email],

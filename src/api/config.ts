@@ -1,3 +1,4 @@
+import { auth } from "@/integrations/firebase/client";
 import { isDevMode } from "@/lib/utils";
 
 // Project configuration
@@ -41,5 +42,35 @@ export const fileToBase64 = (file: File): Promise<string> => {
       resolve(base64);
     };
     reader.onerror = (error) => reject(error);
+  });
+};
+
+/**
+ * Authenticated fetch wrapper that automatically adds Firebase Auth ID token
+ * Use this for all Cloud Function API calls that require authentication
+ * @param url - The URL to fetch
+ * @param options - Fetch options (optional)
+ * @returns Promise<Response>
+ * @throws Error if user is not authenticated
+ */
+export const authenticatedFetch = async (
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> => {
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    throw new Error("User not authenticated");
+  }
+
+  const idToken = await currentUser.getIdToken();
+
+  const headers = new Headers(options.headers);
+  headers.set("Content-Type", "application/json");
+  headers.set("Authorization", `Bearer ${idToken}`);
+
+  return fetch(url, {
+    ...options,
+    headers,
   });
 };
